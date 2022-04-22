@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:17:42 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/22 17:30:35 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/22 17:59:53 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,18 +59,24 @@ void	*philo_routine(void *phil)
 				usleep(20);
 				continue ;
 			}
-			safe_print(philo->id, "Answer is given\n", &philo->data->print, 0);
+			safe_print(philo->id, "Answer is given after waiting\n", &philo->data->print, 0);
 			philo->answer = philo->data->answer;
 			philo->data->answer = -1;
 			pthread_mutex_unlock(&philo->data->server_answer);
 		}
+		safe_print(philo->id, "Answer is given\n", &philo->data->print, 0);
 		pthread_mutex_unlock(&philo->data->server_com);
 		safe_print(philo->id, "Releasing com\n", &philo->data->print, 0);
 		if (philo->answer == 0)
+		{
 			safe_print(philo->id, "answer is KO\n", &philo->data->print, 0);
+			usleep(20);
+		}
 		else
+		{
 			safe_print(philo->id, "answer is OK\n", &philo->data->print, 0);
-		usleep(200);
+			usleep(2000);
+		}
 	}
 	return (phil);
 }
@@ -113,7 +119,7 @@ int	main(void)
 			{
 				safe_print(-1, "Monitor waiting for request\n", &data.print, 1);
 				pthread_mutex_unlock(&data.server_request);
-				usleep(20);
+				usleep(10);
 				continue ;
 			}
 			data.request_pending = data.request;
