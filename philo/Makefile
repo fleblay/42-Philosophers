@@ -1,15 +1,15 @@
-SRCS_DIR	= ./
+SRCS_DIR	= .
 SRCS_LIST	= philo.c
-SRCS		= $(addprefix $(SRCS_DIR), $(SRCS_LIST))
+SRCS		= $(addprefix $(SRCS_DIR)/, $(SRCS_LIST))
 
-HEADER_DIR	= ./
+HEADER_DIR	= .
 HEADER_LIST	= philo.h
-HEADER		= $(addprefix $(HEADER_DIR), $(HEADER_LIST))
+HEADER		= $(addprefix $(HEADER_DIR)/, $(HEADER_LIST))
 
-OBJS_DIR	= ./obj/
+OBJS_DIR	= ./obj
 OBJS_LIST	= $(patsubst $(SRCS_DIR)%.c, $(OBJS_DIR)%.o, $(SRCS))
 
-CFLAGS		= -Wall -Wextra -Werror -g3 -fsanitize=address
+CFLAGS		= -Wall -Wextra -Werror -g3 -fsanitize=thread
 CC			= cc
 
 NAME		= philo
@@ -17,20 +17,20 @@ NAME		= philo
 
 all	: $(NAME)
 
-$(OBJS_DIR)%.o	: $(SRCS_DIR)%.c $(HEADER) | $(OBJS_DIR)
+$(OBJS_DIR)	:
+	mkdir -p $@
+
+$(OBJS_DIR)/%.o	: $(SRCS_DIR)/%.c $(HEADER) | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -I $(HEADER) -o $@
 
-$(OBJS_DIR)	:
-	mkdir $@
-
 $(NAME)	: $(OBJS_LIST) $(HEADER)
-	$(CC) $(CFLAGS) $(OBJS_LIST) -o $@
+	$(CC) $(CFLAGS) $(OBJS_LIST) -o $@ -pthread
 
 clean	:
-	rm -rf philo
+	rm -rf $(OBJS_DIR)
 
 fclean	: clean
-	rm -rf $(OBJS_DIR)
+	rm -rf $(NAME)
 
 re	: fclean all
 
