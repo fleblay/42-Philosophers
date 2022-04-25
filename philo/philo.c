@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:17:42 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/25 17:56:54 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/25 18:31:58 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,8 @@ void	*philo_routine(void *phil)
 			pthread_mutex_unlock(&philo->data->server_dead_philo);
 		}
 		//fake dead
-			safe_print(philo->id, "Trying to get com\n", &philo->data->print, 0);
+		safe_print(philo->id, "Trying to get com\n", &philo->data->print, 0);
+		//TODO : Boucle pour savoir si la com est dispo. On quitte si on meurt pendant cette phase de try ou si un philo est mort
 		pthread_mutex_lock(&philo->data->server_com);
 		safe_print(philo->id, "Com ok\n", &philo->data->print, 0);
 		pthread_mutex_lock(&philo->data->server_request);
@@ -185,13 +186,7 @@ int	main(int ac, char *av[])
 			{
 				safe_print(-1, "Monitor waiting for request\n", &data.print, 1);
 				pthread_mutex_unlock(&data.server_request);
-				//Check if dead philo
-				pthread_mutex_lock(&data.server_dead_philo);
-				if (data.dead_philo != -1)
-					data.run = 0;
-				pthread_mutex_unlock(&data.server_dead_philo);
-				//Check if dead philo
-				usleep(10);
+				usleep(20);
 				continue ;
 			}
 			data.request_pending = data.request;
@@ -200,6 +195,12 @@ int	main(int ac, char *av[])
 			pthread_mutex_unlock(&data.server_request);
 		}
 		pthread_mutex_lock(&data.server_answer);
+		//Check if dead philo
+		pthread_mutex_lock(&data.server_dead_philo);
+		if (data.dead_philo != -1)
+			data.run = 0;
+		pthread_mutex_unlock(&data.server_dead_philo);
+		//Check if dead philo
 		ok +=1;
 		data.answer = data.run * ok + (!data.run) * (-1);
 		if (data.answer > 0)
@@ -209,12 +210,6 @@ int	main(int ac, char *av[])
 		else
 			safe_print(data.request_pending, "Monitor gives DEAD signal to request\n", &data.print, 1);
 		pthread_mutex_unlock(&data.server_answer);
-		pthread_mutex_lock(&data.server_dead_philo);
-		//Check if dead philo
-		if (data.dead_philo != -1)
-			data.run = 0;
-		pthread_mutex_unlock(&data.server_dead_philo);
-		//Check if dead philo
 	}
 	safe_print(data.dead_philo, "Monitor has received RIP status\n", &data.print, 1);
 	i = 0;
