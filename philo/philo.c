@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:17:42 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/22 17:59:53 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/25 10:45:37 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,10 @@ void	safe_print(int id, char *txt, pthread_mutex_t *print_mutex, int monitor)
 {
 	pthread_mutex_lock(print_mutex);
 	if (monitor)
-		printf("\x1b[33m");
+		printf("[MONITOR]");
 	if (id >= 0)
 		printf("Philo %d ", id);
 	printf("%s", txt);
-	if (monitor)
-		printf("\x1b[0m");
 	pthread_mutex_unlock(print_mutex);
 }
 
@@ -49,6 +47,7 @@ void	*philo_routine(void *phil)
 		philo->data->request = philo->id;
 		safe_print(philo->id, "Request made\n", &philo->data->print, 0);
 		pthread_mutex_unlock(&philo->data->server_request);
+		philo->answer = -1;
 		while (philo->answer == -1)
 		{
 			pthread_mutex_lock(&philo->data->server_answer);
@@ -71,11 +70,13 @@ void	*philo_routine(void *phil)
 		{
 			safe_print(philo->id, "answer is KO\n", &philo->data->print, 0);
 			usleep(20);
+			safe_print(philo->id, "Finished waiting after KO\n", &philo->data->print, 0);
 		}
 		else
 		{
 			safe_print(philo->id, "answer is OK\n", &philo->data->print, 0);
 			usleep(2000);
+			safe_print(philo->id, "Finished waiting after OK\n", &philo->data->print, 0);
 		}
 	}
 	return (phil);
