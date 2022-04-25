@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/25 12:52:11 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/25 16:38:40 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <sys/time.h>
 
 typedef struct s_data {
-	pthread_t	thread[3];
+	pthread_t	*thread;
 	pthread_mutex_t fork1;
 	pthread_mutex_t fork2;
 	pthread_mutex_t fork3;

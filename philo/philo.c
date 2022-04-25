@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:17:42 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/25 13:15:20 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/25 17:56:54 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <stdlib.h>
 
 int		get_sim_duration(void)
 {
@@ -34,12 +35,15 @@ int		get_sim_duration(void)
 	}
 	else if (gettimeofday(&time, NULL) == -1)
 		return (-1);
-	time_stamp = 
+	time_stamp = (time.tv_sec - start_sec) * 1000
+		+ (time.tv_usec - start_usec) / 1000;
+	return (time_stamp);
 }
 
 void	safe_print(int id, char *txt, pthread_mutex_t *print, int monitor)
 {
 	pthread_mutex_lock(print);
+	printf("[%d] ", get_sim_duration());
 	if (monitor)
 		printf("[MONITOR]");
 	if (id >= 0)
@@ -52,8 +56,31 @@ void	*philo_routine(void *phil)
 {
 	t_philo	*philo;
 	philo = (t_philo *)phil;
+	safe_print(philo->id, "is alive\n", &philo->data->print, 0);
 	while (philo->dead == -1)
 	{
+		//check if one died
+		pthread_mutex_lock(&philo->data->server_dead_philo);
+		if (philo->data->dead_philo != -1)
+		{
+			philo->dead = philo->data->dead_philo;
+			pthread_mutex_unlock(&philo->data->server_dead_philo);
+			safe_print(philo->id, "Found out dead philo before trying to init com\n", &philo->data->print, 0);
+			break ;
+		}
+		pthread_mutex_unlock(&philo->data->server_dead_philo);
+		//check if one died
+		//fake dead
+		if (philo->id == 1 && get_sim_duration() > 3000)
+		{
+			safe_print(philo->id, "Faking Death\n", &philo->data->print, 0);
+			pthread_mutex_lock(&philo->data->server_dead_philo);
+			philo->data->dead_philo = philo->id;
+			philo->dead = philo->id;
+			pthread_mutex_unlock(&philo->data->server_dead_philo);
+		}
+		//fake dead
+			safe_print(philo->id, "Trying to get com\n", &philo->data->print, 0);
 		pthread_mutex_lock(&philo->data->server_com);
 		safe_print(philo->id, "Com ok\n", &philo->data->print, 0);
 		pthread_mutex_lock(&philo->data->server_request);
@@ -63,13 +90,19 @@ void	*philo_routine(void *phil)
 		philo->answer = -1;
 		while (philo->dead == -1 && philo->answer == -1)
 		{
+			//check if one died
+			pthread_mutex_lock(&philo->data->server_dead_philo);
+			if (philo->data->dead_philo != -1)
+				philo->dead = philo->data->dead_philo;
+			pthread_mutex_unlock(&philo->data->server_dead_philo);
+			//check if one died
 			pthread_mutex_lock(&philo->data->server_answer);
 			if (philo->data->answer == -1)
 			{
 				safe_print(philo->id, "Waiting for answer\n", &philo->data->print, 0);
 				pthread_mutex_unlock(&philo->data->server_answer);
-				//check if self dead
-				usleep(20);
+				//check if one died
+				usleep(80);
 				continue ;
 			}
 			safe_print(philo->id, "Answer is given after waiting\n", &philo->data->print, 0);
@@ -86,24 +119,35 @@ void	*philo_routine(void *phil)
 			usleep(10);
 			safe_print(philo->id, "Finished waiting after KO\n", &philo->data->print, 0);
 		}
-		else
+		else if (philo->answer > 0)
 		{
 			safe_print(philo->id, "answer is OK\n", &philo->data->print, 0);
 			usleep(2000);
 			safe_print(philo->id, "Finished waiting after OK\n", &philo->data->print, 0);
 		}
-		//check if self dead
+		/*
+		else if (philo->answer == -2)
+		{
+			safe_print(philo->id, "answer is DEAD philo\n", &philo->data->print, 0);
+			break ;
+		}
+		*/
 	}
+	if (philo->dead == philo->id)
+		safe_print(philo->id, "quiting because of i am dead\n", &philo->data->print, 0);
+	else if (philo->dead != -1)
+		safe_print(philo->id, "quiting because of dead peer\n", &philo->data->print, 0);
 	return (phil);
 }
 
-int	main(void)
+int	main(int ac, char *av[])
 {
 	long		i;
 	static int	ok = 0;
 	t_data	data;
-	t_philo	philo[3];
+	t_philo	*philo;
 
+	(void)ac;
 	pthread_mutex_init(&data.fork1, NULL);
 	pthread_mutex_init(&data.fork2, NULL);
 	pthread_mutex_init(&data.fork3, NULL);
@@ -120,7 +164,9 @@ int	main(void)
 
 	i = 0;
 	get_sim_duration();
-	while (i < 3)
+	data.thread = (pthread_t *)malloc(atoi(av[1]) * sizeof(pthread_t));
+	philo = (t_philo *)malloc(atoi(av[1]) * sizeof(t_philo));
+	while (i < atoi(av[1]))
 	{
 		philo[i].id = i;
 		philo[i].answer = -1;
@@ -139,11 +185,13 @@ int	main(void)
 			{
 				safe_print(-1, "Monitor waiting for request\n", &data.print, 1);
 				pthread_mutex_unlock(&data.server_request);
+				//Check if dead philo
 				pthread_mutex_lock(&data.server_dead_philo);
 				if (data.dead_philo != -1)
 					data.run = 0;
 				pthread_mutex_unlock(&data.server_dead_philo);
-				usleep(5);
+				//Check if dead philo
+				usleep(10);
 				continue ;
 			}
 			data.request_pending = data.request;
@@ -153,24 +201,29 @@ int	main(void)
 		}
 		pthread_mutex_lock(&data.server_answer);
 		ok +=1;
-		data.answer = ok % 3;
-		if (data.answer)
+		data.answer = data.run * ok + (!data.run) * (-1);
+		if (data.answer > 0)
 			safe_print(data.request_pending, "Monitor gives OK to request\n", &data.print, 1);
-		else
+		else if (data.answer == 0)
 			safe_print(data.request_pending, "Monitor gives KO to request\n", &data.print, 1);
+		else
+			safe_print(data.request_pending, "Monitor gives DEAD signal to request\n", &data.print, 1);
 		pthread_mutex_unlock(&data.server_answer);
 		pthread_mutex_lock(&data.server_dead_philo);
+		//Check if dead philo
 		if (data.dead_philo != -1)
 			data.run = 0;
 		pthread_mutex_unlock(&data.server_dead_philo);
+		//Check if dead philo
 	}
 	safe_print(data.dead_philo, "Monitor has received RIP status\n", &data.print, 1);
 	i = 0;
-	while (i < 3)
+	while (i < atoi(av[1]))
 	{
 		pthread_join(data.thread[i], NULL);
 		i++;
 	}
+	safe_print(0 , "Finished waiting threads\n", &data.print, 1);
 	pthread_mutex_destroy(&data.fork1);
 	pthread_mutex_destroy(&data.fork2);
 	pthread_mutex_destroy(&data.fork3);
@@ -179,5 +232,6 @@ int	main(void)
 	pthread_mutex_destroy(&data.server_com);
 	pthread_mutex_destroy(&data.server_dead_philo);
 	pthread_mutex_destroy(&data.print);
+	printf("Fin Simu\n");
 	return (1);
 }
