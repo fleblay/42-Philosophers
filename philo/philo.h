@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/26 12:48:19 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/26 16:36:10 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,28 @@ typedef struct s_data {
 typedef struct s_philo {
 	t_data	*data;
 	int		id;
+	int		has_com;
 	int		answer;
 	int		dead;
+	int		time_last_eat;
+	int		start_eat;
+	int		start_sleep;
 }	t_philo;
 
-int	init_data(t_data *data, int ac, char *av[]);
+int			init_data(t_data *data, int ac, char *av[]);
+int			init_philo(t_data *data);
+int			launch_philo(t_data *data);
+void		*philo_routine(void *phil);
+void		cleanup(t_data *data);
+void		safe_print(int id, char *txt, pthread_mutex_t *print, int monitor);
+int			get_sim_duration(void);
+int			self_is_dead(t_philo *philo);
+int			someone_is_dead(t_philo *philo);
+void		wait_for_com_token(t_philo *philo);
+void		grab_com_and_place_request(t_philo *philo);
+void		wait_for_answer(t_philo *philo);
+void		release_com_token_and_com(t_philo *philo);
+void		eat_for_time(t_philo *philo);
+void		sleep_for_time(t_philo *philo);
 
 #endif
