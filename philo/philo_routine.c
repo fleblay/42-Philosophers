@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 15:41:24 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/26 16:34:54 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/26 18:56:48 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,12 +70,12 @@ void	wait_for_answer(t_philo *philo)
 		philo->data->answer = -1;
 		pthread_mutex_unlock(&philo->data->server_answer);
 	}
+	safe_print(philo->id, "Answer is given\n", &philo->data->print, 0);
 	return ;
 }
 
 void	release_com_token_and_com(t_philo *philo)
 {
-	safe_print(philo->id, "Answer is given\n", &philo->data->print, 0);
 	pthread_mutex_unlock(&philo->data->server_com);
 	safe_print(philo->id, "Releasing com\n", &philo->data->print, 0);
 	pthread_mutex_lock(&philo->data->server_available_com);
@@ -88,6 +88,8 @@ void	release_com_token_and_com(t_philo *philo)
 
 void	eat_for_time(t_philo *philo)
 {
+	if (self_is_dead(philo) || someone_is_dead(philo))
+		return ;
 	philo->start_eat = get_sim_duration();
 	safe_print(philo->id, "Start eating\n", &philo->data->print, 0);
 	while (philo->dead == -1 && get_sim_duration() - philo->start_eat < philo->data->tte)
@@ -109,6 +111,8 @@ void	eat_for_time(t_philo *philo)
 
 void	sleep_for_time(t_philo *philo)
 {
+	if (self_is_dead(philo) || someone_is_dead(philo))
+		return ;
 	philo->start_sleep = get_sim_duration();
 	safe_print(philo->id, "Start sleeping\n", &philo->data->print, 0);
 	while (philo->dead == -1 && get_sim_duration() - philo->start_sleep < philo->data->tts)
@@ -124,4 +128,26 @@ void	sleep_for_time(t_philo *philo)
 	else
 		safe_print(philo->id, "Someone died while I was sleeping\n", &philo->data->print, 0);
 	return ;
+}
+
+void	lock_forks(t_philo *philo)
+{
+	safe_print(philo->id, "Picking up forks\n", &philo->data->print, 0);
+	pthread_mutex_lock(&philo->data->fork[philo->index_fork1]);
+	philo->data->fork_available[philo->index_fork1] = 0;
+	pthread_mutex_unlock(&philo->data->fork[philo->index_fork1]);
+	pthread_mutex_lock(&philo->data->fork[philo->index_fork2]);
+	philo->data->fork_available[philo->index_fork2] = 0;
+	pthread_mutex_unlock(&philo->data->fork[philo->index_fork2]);
+}
+
+void	release_forks(t_philo *philo)
+{
+	safe_print(philo->id, "Releasing forks\n", &philo->data->print, 0);
+	pthread_mutex_lock(&philo->data->fork[philo->index_fork1]);
+	philo->data->fork_available[philo->index_fork1] = 1;
+	pthread_mutex_unlock(&philo->data->fork[philo->index_fork1]);
+	pthread_mutex_lock(&philo->data->fork[philo->index_fork2]);
+	philo->data->fork_available[philo->index_fork2] = 1;
+	pthread_mutex_unlock(&philo->data->fork[philo->index_fork2]);
 }

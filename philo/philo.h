@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/26 16:36:10 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/26 18:47:16 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ typedef struct s_data {
 	int				ntepme;
 	pthread_t		*thread;
 	pthread_mutex_t *fork;
+	int				*fork_available;
 	pthread_mutex_t server_request;
 	pthread_mutex_t server_answer;
 	pthread_mutex_t server_com;
@@ -49,6 +50,8 @@ typedef struct s_philo {
 	int		time_last_eat;
 	int		start_eat;
 	int		start_sleep;
+	int		index_fork1;
+	int		index_fork2;
 }	t_philo;
 
 int			init_data(t_data *data, int ac, char *av[]);
@@ -66,5 +69,10 @@ void		wait_for_answer(t_philo *philo);
 void		release_com_token_and_com(t_philo *philo);
 void		eat_for_time(t_philo *philo);
 void		sleep_for_time(t_philo *philo);
+int			monitor_someone_is_dead(t_data *data);
+void		get_request(t_data *data);
+int			check_available_forks(t_data *data);
+void		lock_forks(t_philo *philo);
+void		release_forks(t_philo *philo);
 
 #endif

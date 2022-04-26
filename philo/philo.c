@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:17:42 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/26 16:50:15 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/26 18:58:20 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,10 @@ void	*philo_routine(void *philosopher)
 		wait_for_com_token(philo);
 		grab_com_and_place_request(philo);
 		wait_for_answer(philo);
-		release_com_token_and_com(philo);
-
+		//release_com_token_and_com(philo);
 		if (philo->answer == 0)
 		{
+			release_com_token_and_com(philo);
 			safe_print(philo->id, "answer is KO\n", &philo->data->print, 0);
 			usleep(10);
 			safe_print(philo->id, "Finished waiting after KO\n", &philo->data->print, 0);
@@ -38,8 +38,13 @@ void	*philo_routine(void *philosopher)
 		else if (philo->answer > 0)
 		{
 			safe_print(philo->id, "answer is OK\n", &philo->data->print, 0);
-			eat_for_time(philo);
-			sleep_for_time(philo);
+			lock_forks(philo);
+			release_com_token_and_com(philo);
+			if (philo->dead == -1)
+				eat_for_time(philo);
+			release_forks(philo);
+			if (philo->dead == -1)
+				sleep_for_time(philo);
 		}
 	}
 	if (philo->dead == philo->id)
@@ -51,7 +56,6 @@ void	*philo_routine(void *philosopher)
 
 int	main(int ac, char *av[])
 {
-	static int	ok = 0;
 	t_data	data;
 	
 	if (ac != 5 && ac != 6)
@@ -63,37 +67,11 @@ int	main(int ac, char *av[])
 	launch_philo(&data);
 	while (data.run)
 	{
-		data.request_pending = -1;
-		while (data.run && data.request_pending == -1)
-		{
-			pthread_mutex_lock(&data.server_request);
-			if (data.request == -1)
-			{
-				//Check if dead philo
-				pthread_mutex_lock(&data.server_dead_philo);
-				if (data.dead_philo != -1)
-					data.run = 0;
-				pthread_mutex_unlock(&data.server_dead_philo);
-				//Check if dead philo
-				safe_print(-1, "Monitor waiting for request\n", &data.print, 1);
-				pthread_mutex_unlock(&data.server_request);
-				usleep(20);
-				continue ;
-			}
-			data.request_pending = data.request;
-			data.request = -1;
-			safe_print(data.request_pending, "Monitor has a request\n", &data.print, 1);
-			pthread_mutex_unlock(&data.server_request);
-		}
+		get_request(&data);
 		pthread_mutex_lock(&data.server_answer);
-		//Check if dead philo
-		pthread_mutex_lock(&data.server_dead_philo);
-		if (data.dead_philo != -1)
+		if (monitor_someone_is_dead(&data))
 			data.run = 0;
-		pthread_mutex_unlock(&data.server_dead_philo);
-		//Check if dead philo
-		ok +=1;
-		data.answer = data.run * ok + (!data.run) * (-1);
+		data.answer = data.run * check_available_forks(&data) + (!data.run) * (-1);
 		if (data.answer > 0)
 			safe_print(data.request_pending, "Monitor gives OK to request\n", &data.print, 1);
 		else if (data.answer == 0)
