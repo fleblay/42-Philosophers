@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:17:42 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/25 18:31:58 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/26 12:56:50 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,18 +126,15 @@ void	*philo_routine(void *phil)
 			usleep(2000);
 			safe_print(philo->id, "Finished waiting after OK\n", &philo->data->print, 0);
 		}
-		/*
-		else if (philo->answer == -2)
-		{
-			safe_print(philo->id, "answer is DEAD philo\n", &philo->data->print, 0);
-			break ;
-		}
-		*/
 	}
 	if (philo->dead == philo->id)
+	{
 		safe_print(philo->id, "quiting because of i am dead\n", &philo->data->print, 0);
+	}
 	else if (philo->dead != -1)
+	{
 		safe_print(philo->id, "quiting because of dead peer\n", &philo->data->print, 0);
+	}
 	return (phil);
 }
 
@@ -146,34 +143,26 @@ int	main(int ac, char *av[])
 	long		i;
 	static int	ok = 0;
 	t_data	data;
-	t_philo	*philo;
-
-	(void)ac;
-	pthread_mutex_init(&data.fork1, NULL);
-	pthread_mutex_init(&data.fork2, NULL);
-	pthread_mutex_init(&data.fork3, NULL);
-	pthread_mutex_init(&data.server_request, NULL);
-	pthread_mutex_init(&data.server_answer, NULL);
-	pthread_mutex_init(&data.server_com, NULL);
-	pthread_mutex_init(&data.server_dead_philo, NULL);
-	pthread_mutex_init(&data.print, NULL);
-	data.request_pending = -1;
-	data.request = -1;
-	data.answer = -1;
-	data.dead_philo = -1;
-	data.run = 1;
-
-	i = 0;
+	
+	if (ac != 5 && ac != 6)
+		return (printf("Wrong arg count\n"), 1);
+	if (!init_data(&data, ac, av))
+		return (printf("Malloc error while init\n"), 1);
 	get_sim_duration();
-	data.thread = (pthread_t *)malloc(atoi(av[1]) * sizeof(pthread_t));
-	philo = (t_philo *)malloc(atoi(av[1]) * sizeof(t_philo));
-	while (i < atoi(av[1]))
+	i = 0;
+	while (i < data.philo_count)
 	{
-		philo[i].id = i;
-		philo[i].answer = -1;
-		philo[i].dead = -1;
-		philo[i].data = &data;
-		pthread_create(&data.thread[i], NULL, philo_routine, &philo[i]);
+		data.philo[i].id = i;
+		data.philo[i].answer = -1;
+		data.philo[i].dead = -1;
+		data.philo[i].data = &data;
+		pthread_mutex_init(&data.fork[i], NULL);
+		i++;
+	}
+	i = 0;
+	while (i < data.philo_count)
+	{
+		pthread_create(&data.thread[i], NULL, philo_routine, &data.philo[i]);
 		i++;
 	}
 	while (data.run)
@@ -213,18 +202,25 @@ int	main(int ac, char *av[])
 	}
 	safe_print(data.dead_philo, "Monitor has received RIP status\n", &data.print, 1);
 	i = 0;
-	while (i < atoi(av[1]))
+	while (i < data.philo_count)
 	{
 		pthread_join(data.thread[i], NULL);
 		i++;
 	}
+	i = 0;
+	while (i < data.philo_count)
+	{
+		pthread_mutex_destroy(&data.fork[i]);
+		i++;
+	}
 	safe_print(0 , "Finished waiting threads\n", &data.print, 1);
-	pthread_mutex_destroy(&data.fork1);
-	pthread_mutex_destroy(&data.fork2);
-	pthread_mutex_destroy(&data.fork3);
+	free(data.thread);
+	free(data.fork);
+	free(data.philo);
 	pthread_mutex_destroy(&data.server_request);
 	pthread_mutex_destroy(&data.server_answer);
 	pthread_mutex_destroy(&data.server_com);
+	pthread_mutex_destroy(&data.server_available_com);
 	pthread_mutex_destroy(&data.server_dead_philo);
 	pthread_mutex_destroy(&data.print);
 	printf("Fin Simu\n");

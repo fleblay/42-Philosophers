@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/25 16:38:40 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/26 12:48:19 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,21 +17,27 @@
 #include <sys/time.h>
 
 typedef struct s_data {
-	pthread_t	*thread;
-	pthread_mutex_t fork1;
-	pthread_mutex_t fork2;
-	pthread_mutex_t fork3;
+	struct s_philo	*philo;
+	int				philo_count;
+	int				ttd;
+	int				tte;
+	int				tts;
+	int				ntepme;
+	pthread_t		*thread;
+	pthread_mutex_t *fork;
 	pthread_mutex_t server_request;
 	pthread_mutex_t server_answer;
 	pthread_mutex_t server_com;
+	pthread_mutex_t server_available_com;
 	pthread_mutex_t server_dead_philo;
 	pthread_mutex_t print;
-	int	request_pending;
-	int	request;
-	int	answer;
-	int	dead_philo;
-	int	run;
-	struct timeval time;
+	int				available_com;
+	int				request_pending;
+	int				request;
+	int				answer;
+	int				dead_philo;
+	int				run;
+	struct timeval	time;
 }	t_data;	
 
 typedef struct s_philo {
@@ -40,5 +46,7 @@ typedef struct s_philo {
 	int		answer;
 	int		dead;
 }	t_philo;
+
+int	init_data(t_data *data, int ac, char *av[]);
 
 #endif

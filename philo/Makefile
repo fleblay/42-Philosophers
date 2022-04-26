@@ -1,5 +1,5 @@
 SRCS_DIR	= .
-SRCS_LIST	= philo.c
+SRCS_LIST	= philo.c philo_init.c
 SRCS		= $(addprefix $(SRCS_DIR)/, $(SRCS_LIST))
 
 HEADER_DIR	= .
