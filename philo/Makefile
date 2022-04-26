@@ -21,7 +21,7 @@ $(OBJS_DIR)	:
 	mkdir -p $@
 
 $(OBJS_DIR)/%.o	: $(SRCS_DIR)/%.c $(HEADER) | $(OBJS_DIR)
-	$(CC) $(CFLAGS) -c $< -I $(HEADER) -o $@
+	$(CC) $(CFLAGS) -c $< -I $(HEADER_DIR) -o $@
 
 $(NAME)	: $(OBJS_LIST) $(HEADER)
 	$(CC) $(CFLAGS) $(OBJS_LIST) -o $@ -pthread
