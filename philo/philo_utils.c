@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 14:09:27 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/26 16:46:26 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 08:13:01 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int		get_sim_duration(void)
 			return (-1);
 		start_sec = time.tv_sec;
 		start_usec = time.tv_usec;
-		printf("Setting start of sim [%ld:%ld]\n", start_sec, start_usec);
+		printf("Setting start of sim [%ld:%ld]\n", start_sec, (long)start_usec);
 		return (0);
 	}
 	else if (gettimeofday(&time, NULL) == -1)
