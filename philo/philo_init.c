@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 12:23:15 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/26 18:40:08 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 10:49:55 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,9 +59,8 @@ int	init_philo(t_data *data)
 		data->philo[i].has_com = -1;
 		data->philo[i].answer = -1;
 		data->philo[i].dead = -1;
-		data->philo[i].time_last_eat = 0;
-		data->philo[i].start_sleep = -1;
-		data->philo[i].start_eat = -1;
+		data->philo[i].start_sleep = 0;
+		data->philo[i].start_eat = 0;
 		pthread_mutex_init(&data->fork[i], NULL);
 		data->fork_available[i] = 1;
 		data->philo[i].index_fork1 = data->philo[i].id - 1;

@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 14:05:07 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/26 14:08:37 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 10:49:11 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,20 +22,24 @@ void	cleanup(t_data *data)
 	int i;
 
 	i = 0;
+	safe_print(0 , "Start joining threads\n", &data->print, 1);
 	while (i < data->philo_count)
 	{
 		pthread_join(data->thread[i], NULL);
 		i++;
 	}
+	safe_print(0 , "Finished waiting threads\n", &data->print, 1);
 	i = 0;
+	safe_print(0 , "Start destroying mutexes forks\n", &data->print, 1);
 	while (i < data->philo_count)
 	{
 		pthread_mutex_destroy(&data->fork[i]);
 		i++;
 	}
-	safe_print(0 , "Finished waiting threads\n", &data->print, 1);
+	safe_print(0 , "Finished destroying mutexes forks\n", &data->print, 1);
 	free(data->thread);
 	free(data->fork);
+	free(data->fork_available);
 	free(data->philo);
 	pthread_mutex_destroy(&data->server_request);
 	pthread_mutex_destroy(&data->server_answer);

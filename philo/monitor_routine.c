@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 17:29:13 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/26 18:52:30 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 10:56:10 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ int	check_available_forks(t_data *data)
 	available = 0;
 	index_fork1 = data->request_pending - 1;
 	index_fork2 = data->request_pending % data->philo_count;
+	if (index_fork1 == index_fork2)
+		return (0);
 	pthread_mutex_lock(&data->fork[index_fork1]);
 	available += data->fork_available[index_fork1];
 	pthread_mutex_unlock(&data->fork[index_fork1]);

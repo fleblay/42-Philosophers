@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 15:41:24 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/26 18:56:48 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 09:48:35 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ void	eat_for_time(t_philo *philo)
 	{
 		safe_print(philo->id, "Finished eating\n", &philo->data->print, 0);
 		//unlock les forks
-		philo->time_last_eat = get_sim_duration();
+		//philo->time_last_eat = get_sim_duration();
 	}
 	else
 		safe_print(philo->id, "Someone died while I was eating\n", &philo->data->print, 0);

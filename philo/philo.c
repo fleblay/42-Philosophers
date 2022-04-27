@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:17:42 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/26 18:58:20 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 10:47:54 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ void	*philo_routine(void *philosopher)
 		wait_for_com_token(philo);
 		grab_com_and_place_request(philo);
 		wait_for_answer(philo);
-		//release_com_token_and_com(philo);
 		if (philo->answer == 0)
 		{
 			release_com_token_and_com(philo);
@@ -45,6 +44,11 @@ void	*philo_routine(void *philosopher)
 			release_forks(philo);
 			if (philo->dead == -1)
 				sleep_for_time(philo);
+		}
+		else if (philo->answer == -1)
+		{
+			release_com_token_and_com(philo);
+			safe_print(philo->id, "answer is someone diead\n", &philo->data->print, 0);
 		}
 	}
 	if (philo->dead == philo->id)
@@ -81,7 +85,6 @@ int	main(int ac, char *av[])
 		pthread_mutex_unlock(&data.server_answer);
 	}
 	safe_print(data.dead_philo, "Monitor has received RIP status\n", &data.print, 1);
-
 	cleanup(&data);
 	return (1);
 }
