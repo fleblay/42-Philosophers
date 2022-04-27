@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:17:42 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/27 16:32:06 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 18:16:55 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	*philo_routine(void *philosopher)
 		{
 			release_com_token_and_com(philo);
 			safe_print(philo->id, "answer is KO\n", &philo->data->print, 0);
-			usleep(200);
+			usleep(100);
 			safe_print(philo->id, "Finished waiting after KO\n", &philo->data->print, 0);
 		}
 		else if (philo->answer > 0)

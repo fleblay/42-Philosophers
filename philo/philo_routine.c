@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 15:41:24 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/27 16:31:52 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 18:47:01 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ void	wait_for_com_token(t_philo *philo)
 		pthread_mutex_lock(&philo->data->server_available_com);
 		if (philo->data->available_com == -1)
 		{
-			safe_print(philo->id, "Waiting for available com\n", &philo->data->print, 0);
+			//safe_print(philo->id, "Waiting for available com\n", &philo->data->print, 0);
 			pthread_mutex_unlock(&philo->data->server_available_com);
-			usleep(200);
+			usleep(100);
 			continue ;
 		}
 		safe_print(philo->id, "grabing available com token\n", &philo->data->print, 0);
@@ -60,9 +60,9 @@ void	wait_for_answer(t_philo *philo)
 		pthread_mutex_lock(&philo->data->server_answer);
 		if (philo->data->answer == -1)
 		{
-			safe_print(philo->id, "Waiting for answer\n", &philo->data->print, 0);
+			//safe_print(philo->id, "Waiting for answer\n", &philo->data->print, 0);
 			pthread_mutex_unlock(&philo->data->server_answer);
-			usleep(200);
+			usleep(100);
 			continue ;
 		}
 		safe_print(philo->id, "Answer is given after waiting\n", &philo->data->print, 0);
@@ -98,7 +98,7 @@ void	eat_for_time(t_philo *philo)
 	{
 		if (self_is_dead(philo) || someone_is_dead(philo))
 			break ;
-		usleep(500);
+		usleep(100);
 	}
 	if (philo->dead == -1)
 	{
@@ -125,7 +125,7 @@ void	sleep_for_time(t_philo *philo)
 	{
 		if (self_is_dead(philo) || someone_is_dead(philo))
 			break ;
-		usleep(500);
+		usleep(100);
 	}
 	if (philo->dead == -1)
 	{

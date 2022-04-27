@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 17:29:13 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/27 16:45:42 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 18:46:25 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	get_request(t_data *data)
 				data->run = 0;
 			//safe_print(-1, "Monitor waiting for request\n", &data->print, 1);
 			pthread_mutex_unlock(&data->server_request);
-			usleep(200);
+			usleep(100);
 			continue ;
 		}
 		data->request_pending = data->request;
