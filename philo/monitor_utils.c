@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 17:31:08 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/27 10:32:37 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 14:57:50 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ int	monitor_someone_is_dead(t_data *data)
 	if (data->dead_philo != -1)
 	{
 		pthread_mutex_unlock(&data->server_dead_philo);
+		data->philo_is_dead = 1;
 		safe_print(-1, "Found out dead philo\n", &data->print, 1);
 		return (1);
 	}

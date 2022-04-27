@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 12:23:15 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/27 12:44:29 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 16:21:40 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,14 @@ int	init_data(t_data *data, int ac, char *av[])
 	data->dead_philo = -1;
 	data->run = 1;
 	data->available_com = 1;
+	data->meal_goal_achieved = 0;
+	data->philo_is_dead = 0;
 	data->philo_count = atoi(av[1]);
 	data->ttd = atoi(av[2]);
 	data->tte = atoi(av[3]);
 	data->tts = atoi(av[4]);
 	if (ac > 5)
-		data->ntepme = atoi(av[4]);
+		data->ntepme = atoi(av[5]);
 	else
 		data->ntepme = -1;
 	data->thread = malloc(data->philo_count * sizeof(pthread_t));
@@ -61,6 +63,7 @@ int	init_philo(t_data *data)
 		data->philo[i].has_com = -1;
 		data->philo[i].answer = -1;
 		data->philo[i].dead = -1;
+		data->philo[i].meal_goal_achieved = 0;
 		data->philo[i].start_sleep = 0;
 		data->philo[i].start_eat = 0;
 		pthread_mutex_init(&data->fork[i], NULL);
@@ -84,7 +87,14 @@ int	launch_philo(t_data *data)
 	{
 		pthread_create(&data->thread[i], NULL, philo_routine, &data->philo[i]);
 		//thread init to protect;
-		i++;
+		i+=2;
+	}
+	i = 1;
+	while (i < data->philo_count)
+	{
+		pthread_create(&data->thread[i], NULL, philo_routine, &data->philo[i]);
+		//thread init to protect;
+		i+=2;
 	}
 	return (1);
 }

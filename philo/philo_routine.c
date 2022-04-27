@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 15:41:24 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/27 12:44:19 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 16:31:52 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,14 @@ void	wait_for_answer(t_philo *philo)
 		{
 			safe_print(philo->id, "Waiting for answer\n", &philo->data->print, 0);
 			pthread_mutex_unlock(&philo->data->server_answer);
-			usleep(80);
+			usleep(200);
 			continue ;
 		}
 		safe_print(philo->id, "Answer is given after waiting\n", &philo->data->print, 0);
 		philo->answer = philo->data->answer;
-		philo->data->answer = -1;
+		// On reset la reponse uniquement si elle vaut OK ou KO
+		if (philo->data->answer >= 0)
+			philo->data->answer = -1;
 		pthread_mutex_unlock(&philo->data->server_answer);
 	}
 	safe_print(philo->id, "Answer is given\n", &philo->data->print, 0);
@@ -96,7 +98,7 @@ void	eat_for_time(t_philo *philo)
 	{
 		if (self_is_dead(philo) || someone_is_dead(philo))
 			break ;
-		usleep(1000);
+		usleep(500);
 	}
 	if (philo->dead == -1)
 	{
@@ -106,6 +108,7 @@ void	eat_for_time(t_philo *philo)
 		pthread_mutex_lock(&philo->data->meal);
 		philo->data->meal_count[philo->id - 1]++;
 		pthread_mutex_unlock(&philo->data->meal);
+		print_meal_count(philo);
 	}
 	else
 		safe_print(philo->id, "Someone died while I was eating\n", &philo->data->print, 0);
@@ -122,7 +125,7 @@ void	sleep_for_time(t_philo *philo)
 	{
 		if (self_is_dead(philo) || someone_is_dead(philo))
 			break ;
-		usleep(1000);
+		usleep(500);
 	}
 	if (philo->dead == -1)
 	{
@@ -153,4 +156,22 @@ void	release_forks(t_philo *philo)
 	pthread_mutex_lock(&philo->data->fork[philo->index_fork2]);
 	philo->data->fork_available[philo->index_fork2] = 1;
 	pthread_mutex_unlock(&philo->data->fork[philo->index_fork2]);
+}
+
+void	print_meal_count(t_philo *philo)
+{
+	int	i;
+
+	i = 0;
+	pthread_mutex_lock(&philo->data->meal);
+	pthread_mutex_lock(&philo->data->print);
+	printf("Meal count :");
+	while (i < philo->data->philo_count)
+	{
+		printf("[%d]", philo->data->meal_count[i]);
+		i++;
+	}
+	printf("\n");
+	pthread_mutex_unlock(&philo->data->print);
+	pthread_mutex_unlock(&philo->data->meal);
 }

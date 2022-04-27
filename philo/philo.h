@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/27 12:56:18 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 15:38:08 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ typedef struct s_data {
 	int				*fork_available;
 	pthread_mutex_t meal;
 	int				*meal_count;
+	int				meal_goal_achieved;
+	int				philo_is_dead;
 	pthread_mutex_t server_request;
 	pthread_mutex_t server_answer;
 	pthread_mutex_t server_com;
@@ -49,6 +51,7 @@ typedef struct s_philo {
 	int		has_com;
 	int		answer;
 	int		dead;
+	int		meal_goal_achieved;
 	int		time_last_eat;
 	int		start_eat;
 	int		start_sleep;
@@ -77,5 +80,6 @@ int			check_available_forks(t_data *data);
 void		lock_forks(t_philo *philo);
 void		release_forks(t_philo *philo);
 int			meal_goal_achieved(t_data *data);
+void		print_meal_count(t_philo *philo);
 
 #endif
