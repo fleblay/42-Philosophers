@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 12:23:15 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/27 10:49:55 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 12:44:29 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ int	init_data(t_data *data, int ac, char *av[])
 	pthread_mutex_init(&data->server_com, NULL);
 	pthread_mutex_init(&data->server_available_com, NULL);
 	pthread_mutex_init(&data->server_dead_philo, NULL);
+	pthread_mutex_init(&data->meal, NULL);
 	pthread_mutex_init(&data->print, NULL);
 	//mutex init to protect;
 	data->request_pending = -1;
@@ -43,8 +44,9 @@ int	init_data(t_data *data, int ac, char *av[])
 	data->thread = malloc(data->philo_count * sizeof(pthread_t));
 	data->fork = malloc(data->philo_count * sizeof(pthread_mutex_t));
 	data->fork_available = malloc(data->philo_count * sizeof(int));
+	data->meal_count = malloc(data->philo_count * sizeof(int));
 	data->philo = malloc(data->philo_count * sizeof(t_philo));
-	return ((data->thread != 0) * (data->fork != 0) * (data->philo!=0) * (data->fork_available != 0));
+	return ((data->thread != 0) * (data->fork != 0) * (data->philo!=0) * (data->fork_available != 0) * (data->meal_count != 0));
 }
 
 int	init_philo(t_data *data)
@@ -63,8 +65,10 @@ int	init_philo(t_data *data)
 		data->philo[i].start_eat = 0;
 		pthread_mutex_init(&data->fork[i], NULL);
 		data->fork_available[i] = 1;
+		data->meal_count[i] = 0;
 		data->philo[i].index_fork1 = data->philo[i].id - 1;
-		data->philo[i].index_fork2 = data->philo[i].id - 1 % data->philo_count;
+		data->philo[i].index_fork2 = (data->philo[i].id) % data->philo_count;
+		printf("Philo id [%d] will try to pick up forks [%d] and [%d]\n", i+1, data->philo[i].index_fork1, data->philo[i].index_fork2);
 		//mutex init to protect;
 		i++;
 	}

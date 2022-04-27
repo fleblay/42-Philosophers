@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:17:42 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/27 10:47:54 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 12:51:22 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,20 @@ void	*philo_routine(void *philosopher)
 	while (philo->dead == -1)
 	{
 		wait_for_com_token(philo);
+		if (philo->dead != -1)
+			break ;
 		grab_com_and_place_request(philo);
+		if (philo->dead != -1)
+		{
+			release_com_token_and_com(philo);
+			break ;
+		}
 		wait_for_answer(philo);
+		if (philo->dead != -1)
+		{
+			release_com_token_and_com(philo);
+			break ;
+		}
 		if (philo->answer == 0)
 		{
 			release_com_token_and_com(philo);
@@ -69,7 +81,7 @@ int	main(int ac, char *av[])
 	init_philo(&data);
 	get_sim_duration();
 	launch_philo(&data);
-	while (data.run)
+	while (data.run && !meal_goal_achieved(&data))
 	{
 		get_request(&data);
 		pthread_mutex_lock(&data.server_answer);
@@ -84,7 +96,10 @@ int	main(int ac, char *av[])
 			safe_print(data.request_pending, "Monitor gives DEAD signal to request\n", &data.print, 1);
 		pthread_mutex_unlock(&data.server_answer);
 	}
-	safe_print(data.dead_philo, "Monitor has received RIP status\n", &data.print, 1);
+	if (!data.run)
+		safe_print(data.dead_philo, "Monitor has received RIP status\n", &data.print, 1);
+	else
+		safe_print(data.dead_philo, "Meal count achieved\n", &data.print, 1);
 	cleanup(&data);
 	return (1);
 }

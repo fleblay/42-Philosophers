@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 15:41:24 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/27 09:48:35 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/27 12:44:19 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,8 +101,11 @@ void	eat_for_time(t_philo *philo)
 	if (philo->dead == -1)
 	{
 		safe_print(philo->id, "Finished eating\n", &philo->data->print, 0);
-		//unlock les forks
 		//philo->time_last_eat = get_sim_duration();
+		safe_print(philo->id, "Updating meal count\n", &philo->data->print, 0);
+		pthread_mutex_lock(&philo->data->meal);
+		philo->data->meal_count[philo->id - 1]++;
+		pthread_mutex_unlock(&philo->data->meal);
 	}
 	else
 		safe_print(philo->id, "Someone died while I was eating\n", &philo->data->print, 0);
