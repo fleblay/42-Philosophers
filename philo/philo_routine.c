@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 15:41:24 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/28 14:57:14 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/28 15:24:50 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ void	sleep_for_time(t_philo *philo)
 	if (philo->dead == -1)
 	{
 		safe_print(philo->id, "is thinking\n", &philo->data->print, 0);
-		if (philo->data->ttt > 0)
+		if (philo->data->ttt > 0 && philo->data->philo_count % 2)
 		{
 			DEBUG && safe_print(philo->id, "DEBUG && Start Waiting for synchro\n", &philo->data->print, 0);
 			usleep(philo->data->ttt * 1000);
