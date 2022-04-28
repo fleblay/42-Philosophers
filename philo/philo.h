@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/28 14:03:25 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/28 18:44:57 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ typedef struct s_data {
 	int				ttd;
 	int				tte;
 	int				tts;
-	int				ntepme;
 	int				ttt;
+	int				ntepme;
 	pthread_t		*thread;
 	pthread_mutex_t *fork;
 	int				*fork_available;
@@ -43,6 +43,7 @@ typedef struct s_data {
 	pthread_mutex_t server_dead_philo;
 	pthread_mutex_t print;
 	pthread_mutex_t start;
+	pthread_mutex_t time_mutex;
 	int				available_com;
 	int				request_pending;
 	int				request;
@@ -64,6 +65,12 @@ typedef struct s_philo {
 	int		start_sleep;
 	int		index_fork1;
 	int		index_fork2;
+	int		ttd;
+	int		tte;
+	int		tts;
+	int		ttt;
+	int		philo_count;
+	int		current_time;
 }	t_philo;
 
 int			init_data(t_data *data, int ac, char *av[]);
@@ -71,7 +78,7 @@ int			init_philo(t_data *data);
 int			launch_philo(t_data *data);
 void		*philo_routine(void *phil);
 void		cleanup(t_data *data);
-int			safe_print(int id, char *txt, pthread_mutex_t *print, int monitor);
+int			safe_print(int id, char *txt, pthread_mutex_t *print, t_data *data);
 int			get_sim_duration(void);
 int			self_is_dead(t_philo *philo);
 int			someone_is_dead(t_philo *philo);
