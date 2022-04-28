@@ -12,10 +12,15 @@ OBJS_LIST	= $(patsubst $(SRCS_DIR)%.c, $(OBJS_DIR)%.o, $(SRCS))
 
 #CFLAGS		= -Wall -Wextra -Werror -g3 -fsanitize=thread
 CFLAGS		= -Wall -Wextra -Werror
-CC			= cc
 
+ifeq ($(MAKECMDGOALS), debug)
+CFLAGS		+= -D DEBUG=1
+endif
+
+CC			= cc
 NAME		= philo
 
+debug : all
 
 all	: $(NAME)
 

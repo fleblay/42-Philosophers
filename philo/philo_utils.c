@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 14:09:27 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/28 12:39:31 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/28 15:08:03 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,14 @@ int		get_sim_duration(void)
 	return (time_stamp);
 }
 
-void	safe_print(int id, char *txt, pthread_mutex_t *print, int monitor)
+int	safe_print(int id, char *txt, pthread_mutex_t *print, int monitor)
 {
 	(void)monitor;
+	(void)print;
 	pthread_mutex_lock(print);
 	printf("%d %d %s", get_sim_duration(), id, txt);
 	pthread_mutex_unlock(print);
+	return (1);
 }
 /*
 void	safe_print(int id, char *txt, pthread_mutex_t *print, int monitor)
@@ -65,7 +67,7 @@ int	self_is_dead(t_philo *philo)
 {
 	if (get_sim_duration() - philo->start_eat > philo->data->ttd)
 	{
-		//safe_print(philo->id, "I am dead\n", &philo->data->print, 0);
+		DEBUG && safe_print(philo->id, "DEBUG && I am dead\n", &philo->data->print, 0);
 		pthread_mutex_lock(&philo->data->server_dead_philo);
 		philo->data->dead_philo = philo->id;
 		philo->dead = philo->id;
@@ -82,7 +84,7 @@ int	someone_is_dead(t_philo *philo)
 	{
 		philo->dead = philo->data->dead_philo;
 		pthread_mutex_unlock(&philo->data->server_dead_philo);
-		//safe_print(philo->id, "Found out dead philo\n", &philo->data->print, 0);
+		DEBUG && safe_print(philo->id, "DEBUG && Found out dead philo\n", &philo->data->print, 0);
 		return (1);
 	}
 	pthread_mutex_unlock(&philo->data->server_dead_philo);

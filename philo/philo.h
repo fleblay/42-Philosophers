@@ -6,9 +6,14 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/28 10:55:34 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/28 14:03:25 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef DEBUG
+# define DEBUG 0
+#endif
+
 
 #ifndef PHILO_H
 # define PHILO_H
@@ -66,7 +71,7 @@ int			init_philo(t_data *data);
 int			launch_philo(t_data *data);
 void		*philo_routine(void *phil);
 void		cleanup(t_data *data);
-void		safe_print(int id, char *txt, pthread_mutex_t *print, int monitor);
+int			safe_print(int id, char *txt, pthread_mutex_t *print, int monitor);
 int			get_sim_duration(void);
 int			self_is_dead(t_philo *philo);
 int			someone_is_dead(t_philo *philo);

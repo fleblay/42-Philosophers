@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 15:41:24 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/28 12:54:54 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/28 14:57:14 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,12 @@ void	wait_for_com_token(t_philo *philo)
 		pthread_mutex_lock(&philo->data->server_available_com);
 		if (philo->data->available_com == -1)
 		{
-			//safe_print(philo->id, "Waiting for available com\n", &philo->data->print, 0);
+			DEBUG && safe_print(philo->id, "DEBUG && Waiting for available com\n", &philo->data->print, 0);
 			pthread_mutex_unlock(&philo->data->server_available_com);
-			usleep(100);
+			usleep(20);
 			continue ;
 		}
-		//safe_print(philo->id, "grabing available com token\n", &philo->data->print, 0);
+		DEBUG && safe_print(philo->id, "DEBUG && grabing available com token\n", &philo->data->print, 0);
 		philo->has_com = 1;
 		philo->data->available_com = -1;
 		pthread_mutex_unlock(&philo->data->server_available_com);
@@ -42,10 +42,10 @@ void	wait_for_com_token(t_philo *philo)
 void	grab_com_and_place_request(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->data->server_com);
-	//safe_print(philo->id, "Com ok\n", &philo->data->print, 0);
+	DEBUG && safe_print(philo->id, "DEBUG && Com ok\n", &philo->data->print, 0);
 	pthread_mutex_lock(&philo->data->server_request);
 	philo->data->request = philo->id;
-	//safe_print(philo->id, "Request made\n", &philo->data->print, 0);
+	DEBUG && safe_print(philo->id, "DEBUG && Request made\n", &philo->data->print, 0);
 	pthread_mutex_unlock(&philo->data->server_request);
 	philo->answer = -1;
 	return ;
@@ -60,26 +60,26 @@ void	wait_for_answer(t_philo *philo)
 		pthread_mutex_lock(&philo->data->server_answer);
 		if (philo->data->answer == -1)
 		{
-			//safe_print(philo->id, "Waiting for answer\n", &philo->data->print, 0);
+			DEBUG && safe_print(philo->id, "DEBUG && Waiting for answer\n", &philo->data->print, 0);
 			pthread_mutex_unlock(&philo->data->server_answer);
-			usleep(100);
+			usleep(20);
 			continue ;
 		}
-		//safe_print(philo->id, "Answer is given after waiting\n", &philo->data->print, 0);
+		DEBUG && safe_print(philo->id, "DEBUG && Answer is given after waiting\n", &philo->data->print, 0);
 		philo->answer = philo->data->answer;
 		// On reset la reponse uniquement si elle vaut OK ou KO
 		if (philo->data->answer >= 0)
 			philo->data->answer = -1;
 		pthread_mutex_unlock(&philo->data->server_answer);
 	}
-	//safe_print(philo->id, "Answer is given\n", &philo->data->print, 0);
+	DEBUG && safe_print(philo->id, "DEBUG && Answer is given\n", &philo->data->print, 0);
 	return ;
 }
 
 void	release_com_token_and_com(t_philo *philo)
 {
 	pthread_mutex_unlock(&philo->data->server_com);
-	//safe_print(philo->id, "Releasing com\n", &philo->data->print, 0);
+	DEBUG && safe_print(philo->id, "DEBUG && Releasing com\n", &philo->data->print, 0);
 	pthread_mutex_lock(&philo->data->server_available_com);
 	//safe_print(philo->id, "Releasing available com token\n", &philo->data->print, 0);
 	philo->has_com = -1;
@@ -102,8 +102,8 @@ void	eat_for_time(t_philo *philo)
 	}
 	if (philo->dead == -1)
 	{
-		//safe_print(philo->id, "Finished eating\n", &philo->data->print, 0);
-		//safe_print(philo->id, "Updating meal count\n", &philo->data->print, 0);
+		DEBUG && safe_print(philo->id, "DEBUG && Finished eating\n", &philo->data->print, 0);
+		DEBUG && safe_print(philo->id, "DEBUG && Updating meal count\n", &philo->data->print, 0);
 		pthread_mutex_lock(&philo->data->meal);
 		philo->data->meal_count[philo->id - 1]++;
 		pthread_mutex_unlock(&philo->data->meal);
@@ -111,7 +111,7 @@ void	eat_for_time(t_philo *philo)
 	}
 	else
 	{
-	//	safe_print(philo->id, "Someone died while I was eating\n", &philo->data->print, 0);
+		DEBUG && safe_print(philo->id, "DEBUG && Someone died while I was eating\n", &philo->data->print, 0);
 	}
 	return ;
 }
@@ -133,14 +133,14 @@ void	sleep_for_time(t_philo *philo)
 		safe_print(philo->id, "is thinking\n", &philo->data->print, 0);
 		if (philo->data->ttt > 0)
 		{
-			//safe_print(philo->id, "Start Waiting for synchro\n", &philo->data->print, 0);
-			//usleep(philo->data->ttt * 1000);
-			//safe_print(philo->id, "Finished Waiting for synchro\n", &philo->data->print, 0);
+			DEBUG && safe_print(philo->id, "DEBUG && Start Waiting for synchro\n", &philo->data->print, 0);
+			usleep(philo->data->ttt * 1000);
+			DEBUG && safe_print(philo->id, "DEBUG && Finished Waiting for synchro\n", &philo->data->print, 0);
 		}
 	}
 	else
 	{
-		//safe_print(philo->id, "Someone died while I was sleeping\n", &philo->data->print, 0);
+		DEBUG && safe_print(philo->id, "DEBUG && Someone died while I was sleeping\n", &philo->data->print, 0);
 	}
 
 	return ;
@@ -160,7 +160,7 @@ void	lock_forks(t_philo *philo)
 
 void	release_forks(t_philo *philo)
 {
-	//safe_print(philo->id, "Releasing forks\n", &philo->data->print, 0);
+	DEBUG && safe_print(philo->id, "DEBUG && Releasing forks\n", &philo->data->print, 0);
 	pthread_mutex_lock(&philo->data->fork[philo->index_fork1]);
 	philo->data->fork_available[philo->index_fork1] = 1;
 	pthread_mutex_unlock(&philo->data->fork[philo->index_fork1]);
