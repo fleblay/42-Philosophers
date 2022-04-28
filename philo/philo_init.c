@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 12:23:15 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/27 16:21:40 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/28 12:30:02 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ int	init_data(t_data *data, int ac, char *av[])
 	pthread_mutex_init(&data->server_dead_philo, NULL);
 	pthread_mutex_init(&data->meal, NULL);
 	pthread_mutex_init(&data->print, NULL);
+	pthread_mutex_init(&data->start, NULL);
 	//mutex init to protect;
 	data->request_pending = -1;
 	data->request = -1;
@@ -39,6 +40,8 @@ int	init_data(t_data *data, int ac, char *av[])
 	data->ttd = atoi(av[2]);
 	data->tte = atoi(av[3]);
 	data->tts = atoi(av[4]);
+	data->ttt = data->ttd - data->tte - data->tts - 5;
+	data->ttt = (data->ttt > 0) * data->ttt;
 	if (ac > 5)
 		data->ntepme = atoi(av[5]);
 	else
@@ -83,6 +86,7 @@ int	launch_philo(t_data *data)
 	int	i;
 
 	i = 0;
+	pthread_mutex_lock(&data->start);
 	while (i < data->philo_count)
 	{
 		pthread_create(&data->thread[i], NULL, philo_routine, &data->philo[i]);
@@ -96,5 +100,7 @@ int	launch_philo(t_data *data)
 		//thread init to protect;
 		i+=2;
 	}
+	get_sim_duration();
+	pthread_mutex_unlock(&data->start);
 	return (1);
 }

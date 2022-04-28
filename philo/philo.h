@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/27 15:38:08 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/28 10:55:34 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ typedef struct s_data {
 	int				tte;
 	int				tts;
 	int				ntepme;
+	int				ttt;
 	pthread_t		*thread;
 	pthread_mutex_t *fork;
 	int				*fork_available;
@@ -36,6 +37,7 @@ typedef struct s_data {
 	pthread_mutex_t server_available_com;
 	pthread_mutex_t server_dead_philo;
 	pthread_mutex_t print;
+	pthread_mutex_t start;
 	int				available_com;
 	int				request_pending;
 	int				request;
