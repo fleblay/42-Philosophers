@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 14:05:07 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/29 10:42:01 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/28 14:00:59 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,21 @@ void	cleanup(t_data *data)
 	int i;
 
 	i = 0;
+	DEBUG && safe_print(0 , "DEBUG && Start joining threads\n", &data->print, 1);
 	while (i < data->philo_count)
 	{
 		pthread_join(data->thread[i], NULL);
 		i++;
 	}
+	DEBUG && safe_print(0 , "DEBUG && Finished waiting threads\n", &data->print, 1);
 	i = 0;
+	DEBUG && safe_print(0 , "DEBUG && Start destroying mutexes forks\n", &data->print, 1);
 	while (i < data->philo_count)
 	{
 		pthread_mutex_destroy(&data->fork[i]);
 		i++;
 	}
+	DEBUG && safe_print(0 , "DEBUG && Finished destroying mutexes forks\n", &data->print, 1);
 	print_meal_count(&data->philo[0]);
 	free(data->thread);
 	free(data->fork);
@@ -47,6 +51,5 @@ void	cleanup(t_data *data)
 	pthread_mutex_destroy(&data->meal);
 	pthread_mutex_destroy(&data->print);
 	pthread_mutex_destroy(&data->start);
-	pthread_mutex_destroy(&data->time_mutex);
 	//printf("Fin Simu\n");
 }
