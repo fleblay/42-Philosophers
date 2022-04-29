@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:17:42 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/28 19:09:56 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/29 12:45:17 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,11 @@ void	*philo_routine(void *philosopher)
 	t_philo	*philo;
 	philo = (t_philo *)philosopher;
 	pthread_mutex_lock(&philo->data->start);
+	philo->start_time = philo->data->start_time;
 	pthread_mutex_unlock(&philo->data->start);
 	// Remplacer par une fonction clean du monitor qui donne KO
 	if (philo->id % 2 == 0)
-		usleep(philo->ttt * 1000);
+		usleep(philo->tte * 1000);
 	// Remplacer par une fonction clean du monitor qui donne KO
 	while (philo->dead == -1 && philo->meal_goal_achieved == 0)
 	{
@@ -47,44 +48,42 @@ void	*philo_routine(void *philosopher)
 		if (philo->answer == 0)
 		{
 			release_com_token_and_com(philo);
-			DEBUG && safe_print(philo->id, "DEBUG answer is KO\n", &philo->data->print, philo->data);
-			usleep(100);
-			DEBUG && safe_print(philo->id, "DEBUG Finished waiting after KO\n", &philo->data->print, philo->data);
+			DEBUG && safe_print("DEBUG answer is KO\n", philo);
+			usleep(50);
+			DEBUG && safe_print("DEBUG Finished waiting after KO\n", philo);
 		}
 		else if (philo->answer > 0)
 		{
-			DEBUG && safe_print(philo->id, "DEBUG answer is OK\n", &philo->data->print, philo->data);
+			DEBUG && safe_print("DEBUG answer is OK\n", philo);
 			lock_forks(philo);
 			release_com_token_and_com(philo);
-			if (philo->dead == -1)
-				eat_for_time(philo);
+			eat_for_time(philo);
 			release_forks(philo);
-			if (philo->dead == -1)
-				sleep_for_time(philo);
+			sleep_for_time(philo);
 		}
 		else if (philo->answer == -1)
 		{
 			release_com_token_and_com(philo);
-			DEBUG && safe_print(philo->id, "DEBUG && answer is someone died\n", &philo->data->print, philo->data);
+			DEBUG && safe_print("DEBUG && answer is someone died\n", philo);
 		}
 		else if (philo->answer == -2)
 		{
 			release_com_token_and_com(philo);
 			philo->meal_goal_achieved = 1;
-			DEBUG && safe_print(philo->id, "DEBUG && answer is meal count achieved\n", &philo->data->print, philo->data);
+			DEBUG && safe_print("DEBUG && answer is meal count achieved\n", philo);
 		}
 	}
 	if (philo->meal_goal_achieved == 1)
 	{
-		DEBUG && safe_print(philo->id, "DEBUG && quiting because meal count achieved\n", &philo->data->print, philo->data);
+		DEBUG && safe_print("DEBUG && quiting because meal count achieved\n", philo);
 	}
 	else if (philo->dead == philo->id)
 	{
-		safe_print(philo->id, "died\n", &philo->data->print, philo->data);
+		safe_print("died\n", philo);
 	}
 	else if (philo->dead != -1)
 	{
-		DEBUG && safe_print(philo->id, "DEBUG && quiting because of dead peer\n", &philo->data->print, philo->data);
+		DEBUG && safe_print("DEBUG && quiting because of dead peer\n", philo);
 	}
 	return (NULL);
 }
@@ -106,32 +105,33 @@ int	main(int ac, char *av[])
 		pthread_mutex_lock(&data.server_answer);
 		if (monitor_someone_is_dead(&data) || meal_goal_achieved(&data))
 			data.run = 0;
-		data.answer = data.run * check_available_forks(&data) + data.philo_is_dead * (-1) + data.meal_goal_achieved * (-2);
+		//data.answer = data.run * check_available_forks(&data) + data.philo_is_dead * (-1) + data.meal_goal_achieved * (-2);
+		data.answer = 1;
 		if (data.answer > 0)
 		{
-			DEBUG && safe_print(data.request_pending, "DEBUG && Monitor gives OK to request\n", &data.print, &data);
+			DEBUG && safe_print_monitor("DEBUG && Monitor gives OK to request\n", &data);
 		}
 		else if (data.answer == 0)
 		{
-			DEBUG && safe_print(data.request_pending, "DEBUG && Monitor gives KO to request\n", &data.print, &data);
+			DEBUG && safe_print_monitor("DEBUG && Monitor gives KO to request\n", &data);
 		}
 		else if (data.answer == -1)
 		{
-			DEBUG && safe_print(data.request_pending, "DEBUG && Monitor gives DEAD signal to request\n", &data.print, &data);
+			DEBUG && safe_print_monitor("DEBUG && Monitor gives DEAD signal to request\n", &data);
 		}
 		else if (data.answer == -2)
 		{
-			DEBUG && safe_print(data.request_pending, "DEBUG && Monitor gives meal count achieved\n", &data.print, &data);
+			DEBUG && safe_print_monitor("DEBUG && Monitor gives meal count achieved\n", &data);
 		}
 		pthread_mutex_unlock(&data.server_answer);
 	}
 	if (!data.run)
 	{
-		DEBUG && safe_print(data.dead_philo, "DEBUG && Monitor has received RIP status\n", &data.print, &data);
+		DEBUG && safe_print_monitor("DEBUG && Monitor has received RIP status\n", &data);
 	}
 	else
 	{
-		DEBUG && safe_print(data.dead_philo, "DEBUG && Meal count achieved\n", &data.print, &data);
+		DEBUG && safe_print_monitor("DEBUG && Meal count achieved\n", &data);
 	}
 	cleanup(&data);
 	return (0);

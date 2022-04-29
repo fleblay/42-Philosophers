@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/28 18:44:57 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/29 10:45:53 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ typedef struct s_data {
 	int				answer;
 	int				dead_philo;
 	int				run;
+	int				start_time;
 	struct timeval	time;
 }	t_data;	
 
@@ -69,6 +70,7 @@ typedef struct s_philo {
 	int		tte;
 	int		tts;
 	int		ttt;
+	int		start_time;
 	int		philo_count;
 	int		current_time;
 }	t_philo;
@@ -78,8 +80,9 @@ int			init_philo(t_data *data);
 int			launch_philo(t_data *data);
 void		*philo_routine(void *phil);
 void		cleanup(t_data *data);
-int			safe_print(int id, char *txt, pthread_mutex_t *print, t_data *data);
-int			get_sim_duration(void);
+int			safe_print(char *txt, t_philo *philo);
+int			safe_print_monitor(char *txt, t_data *data);
+int			get_sim_duration(int id, char *txt);
 int			self_is_dead(t_philo *philo);
 int			someone_is_dead(t_philo *philo);
 void		wait_for_com_token(t_philo *philo);
@@ -95,5 +98,6 @@ void		lock_forks(t_philo *philo);
 void		release_forks(t_philo *philo);
 int			meal_goal_achieved(t_data *data);
 void		print_meal_count(t_philo *philo);
+int			get_time(void);
 
 #endif
