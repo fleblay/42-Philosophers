@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:17:42 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/29 17:59:26 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/29 18:37:23 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,7 @@ int	main(int ac, char *av[])
 		if (monitor_someone_is_dead(&data) || meal_goal_achieved(&data))
 			data.run = 0;
 		data.answer = data.run * check_available_forks(&data) + data.philo_is_dead * (-1) + data.meal_goal_achieved * (-2);
+		//data.answer = 1;
 		if (data.answer > 0)
 		{
 			DEBUG && safe_print_monitor("DEBUG && Monitor gives OK to request\n", &data);
