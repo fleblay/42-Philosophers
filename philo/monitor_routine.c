@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 17:29:13 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/28 15:12:35 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/29 16:36:45 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,14 @@ void	get_request(t_data *data)
 		{
 			if (monitor_someone_is_dead(data))
 				data->run = 0;
-			DEBUG && safe_print(-1, "DEBUG && Monitor waiting for request\n", &data->print, 1);
+			DEBUG && safe_print_monitor("DEBUG && Monitor waiting for request\n", data);
 			pthread_mutex_unlock(&data->server_request);
 			usleep(20);
 			continue ;
 		}
 		data->request_pending = data->request;
 		data->request = -1;
-		DEBUG && safe_print(data->request_pending, "DEBUG && Monitor has a request\n", &data->print, 1);
+		DEBUG && safe_print_monitor("DEBUG && Monitor has a request\n", data);
 		pthread_mutex_unlock(&data->server_request);
 	}
 }

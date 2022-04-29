@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 14:05:07 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/28 14:00:59 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/29 16:39:17 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,21 @@ void	cleanup(t_data *data)
 	int i;
 
 	i = 0;
-	DEBUG && safe_print(0 , "DEBUG && Start joining threads\n", &data->print, 1);
+	DEBUG && safe_print_monitor("DEBUG && Start joining threads\n", data);
 	while (i < data->philo_count)
 	{
 		pthread_join(data->thread[i], NULL);
 		i++;
 	}
-	DEBUG && safe_print(0 , "DEBUG && Finished waiting threads\n", &data->print, 1);
+	DEBUG && safe_print_monitor("DEBUG && Finished waiting threads\n", data);
 	i = 0;
-	DEBUG && safe_print(0 , "DEBUG && Start destroying mutexes forks\n", &data->print, 1);
+	DEBUG && safe_print_monitor("DEBUG && Start destroying mutexes forks\n", data);
 	while (i < data->philo_count)
 	{
 		pthread_mutex_destroy(&data->fork[i]);
 		i++;
 	}
-	DEBUG && safe_print(0 , "DEBUG && Finished destroying mutexes forks\n", &data->print, 1);
+	DEBUG && safe_print_monitor("DEBUG && Finished destroying mutexes forks\n", data);
 	print_meal_count(&data->philo[0]);
 	free(data->thread);
 	free(data->fork);
@@ -51,5 +51,6 @@ void	cleanup(t_data *data)
 	pthread_mutex_destroy(&data->meal);
 	pthread_mutex_destroy(&data->print);
 	pthread_mutex_destroy(&data->start);
+	pthread_mutex_destroy(&data->time);
 	//printf("Fin Simu\n");
 }

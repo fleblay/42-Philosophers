@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/28 14:03:25 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/29 17:48:49 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@
 typedef struct s_data {
 	struct s_philo	*philo;
 	int				philo_count;
-	int				ttd;
-	int				tte;
-	int				tts;
+	unsigned long				ttd;
+	unsigned long				tte;
+	unsigned long				tts;
+	unsigned long				ttt;
 	int				ntepme;
-	int				ttt;
 	pthread_t		*thread;
 	pthread_mutex_t *fork;
 	int				*fork_available;
@@ -43,13 +43,14 @@ typedef struct s_data {
 	pthread_mutex_t server_dead_philo;
 	pthread_mutex_t print;
 	pthread_mutex_t start;
+	pthread_mutex_t time;
 	int				available_com;
 	int				request_pending;
 	int				request;
 	int				answer;
 	int				dead_philo;
+	unsigned long				start_time;
 	int				run;
-	struct timeval	time;
 }	t_data;	
 
 typedef struct s_philo {
@@ -59,11 +60,18 @@ typedef struct s_philo {
 	int		answer;
 	int		dead;
 	int		meal_goal_achieved;
-	int		time_last_eat;
+	unsigned long		time_last_eat;
 	int		start_eat;
 	int		start_sleep;
 	int		index_fork1;
 	int		index_fork2;
+	int				philo_count;
+	unsigned long				ttd;
+	unsigned long				tte;
+	unsigned long				tts;
+	unsigned long				ttt;
+	unsigned long				start_time;
+	unsigned long				current_time;
 }	t_philo;
 
 int			init_data(t_data *data, int ac, char *av[]);
@@ -71,8 +79,9 @@ int			init_philo(t_data *data);
 int			launch_philo(t_data *data);
 void		*philo_routine(void *phil);
 void		cleanup(t_data *data);
-int			safe_print(int id, char *txt, pthread_mutex_t *print, int monitor);
-int			get_sim_duration(void);
+int	safe_print_philo(char *txt, t_philo *philo); 
+int	safe_print_monitor(char *txt, t_data *data); 
+//int			get_sim_duration(void);
 int			self_is_dead(t_philo *philo);
 int			someone_is_dead(t_philo *philo);
 void		wait_for_com_token(t_philo *philo);
@@ -88,5 +97,6 @@ void		lock_forks(t_philo *philo);
 void		release_forks(t_philo *philo);
 int			meal_goal_achieved(t_data *data);
 void		print_meal_count(t_philo *philo);
+unsigned long		get_time(void);
 
 #endif

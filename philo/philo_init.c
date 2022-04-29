@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 12:23:15 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/28 12:30:02 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/29 16:19:23 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ int	init_data(t_data *data, int ac, char *av[])
 	pthread_mutex_init(&data->meal, NULL);
 	pthread_mutex_init(&data->print, NULL);
 	pthread_mutex_init(&data->start, NULL);
+	pthread_mutex_init(&data->time, NULL);
 	//mutex init to protect;
 	data->request_pending = -1;
 	data->request = -1;
@@ -74,7 +75,11 @@ int	init_philo(t_data *data)
 		data->meal_count[i] = 0;
 		data->philo[i].index_fork1 = data->philo[i].id - 1;
 		data->philo[i].index_fork2 = (data->philo[i].id) % data->philo_count;
-		printf("Philo id [%d] will try to pick up forks [%d] and [%d]\n", i+1, data->philo[i].index_fork1, data->philo[i].index_fork2);
+		data->philo[i].ttd = data->ttd;
+		data->philo[i].tte = data->tte;
+		data->philo[i].tts = data->tts;
+		data->philo[i].ttt = data->ttt;
+		data->philo[i].philo_count = data->philo_count;
 		//mutex init to protect;
 		i++;
 	}
@@ -100,7 +105,9 @@ int	launch_philo(t_data *data)
 		//thread init to protect;
 		i+=2;
 	}
-	get_sim_duration();
+	pthread_mutex_lock(&data->time);
+	data->start_time = get_time();
+	pthread_mutex_unlock(&data->time);
 	pthread_mutex_unlock(&data->start);
 	return (1);
 }

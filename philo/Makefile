@@ -20,9 +20,8 @@ endif
 CC			= cc
 NAME		= philo
 
-debug : all
-
 all	: $(NAME)
+debug : $(NAME)
 
 $(OBJS_DIR)	:
 	mkdir -p $@

@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 14:09:27 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/04/28 15:08:03 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/04/29 17:45:00 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,17 @@
 #include <sys/time.h>
 #include <stdlib.h>
 
+unsigned long		get_time(void)
+{
+	struct timeval	time;
+	unsigned long	time_ms;
+
+	gettimeofday(&time, NULL);
+	time_ms = time.tv_sec * 1000 + time.tv_usec / 1000;
+	return (time_ms);
+}
+
+/*
 int		get_sim_duration(void)
 {
 	static time_t		start_sec = 0;
@@ -39,16 +50,28 @@ int		get_sim_duration(void)
 		+ (time.tv_usec - start_usec) / 1000;
 	return (time_stamp);
 }
+*/
 
-int	safe_print(int id, char *txt, pthread_mutex_t *print, int monitor)
+int	safe_print_philo(char *txt, t_philo *philo) 
 {
-	(void)monitor;
-	(void)print;
-	pthread_mutex_lock(print);
-	printf("%d %d %s", get_sim_duration(), id, txt);
-	pthread_mutex_unlock(print);
+	pthread_mutex_lock(&philo->data->print);
+	pthread_mutex_lock(&philo->data->time);
+	printf("%ld %d %s", get_time() - philo->start_time, philo->id, txt);
+	pthread_mutex_unlock(&philo->data->time);
+	pthread_mutex_unlock(&philo->data->print);
 	return (1);
 }
+
+int	safe_print_monitor(char *txt, t_data *data) 
+{
+	pthread_mutex_lock(&data->print);
+	pthread_mutex_lock(&data->time);
+	printf("%ld %d %s", get_time() - data->start_time, -1, txt);
+	pthread_mutex_unlock(&data->time);
+	pthread_mutex_unlock(&data->print);
+	return (1);
+}
+
 /*
 void	safe_print(int id, char *txt, pthread_mutex_t *print, int monitor)
 {
@@ -65,9 +88,12 @@ void	safe_print(int id, char *txt, pthread_mutex_t *print, int monitor)
 
 int	self_is_dead(t_philo *philo)
 {
-	if (get_sim_duration() - philo->start_eat > philo->data->ttd)
+	pthread_mutex_lock(&philo->data->time);
+	philo->current_time = get_time() - philo->start_time;
+	pthread_mutex_unlock(&philo->data->time);
+	if (philo->current_time - philo->start_eat > philo->ttd)
 	{
-		DEBUG && safe_print(philo->id, "DEBUG && I am dead\n", &philo->data->print, 0);
+		DEBUG && safe_print_philo("DEBUG && I am dead\n", philo);
 		pthread_mutex_lock(&philo->data->server_dead_philo);
 		philo->data->dead_philo = philo->id;
 		philo->dead = philo->id;
@@ -84,7 +110,7 @@ int	someone_is_dead(t_philo *philo)
 	{
 		philo->dead = philo->data->dead_philo;
 		pthread_mutex_unlock(&philo->data->server_dead_philo);
-		DEBUG && safe_print(philo->id, "DEBUG && Found out dead philo\n", &philo->data->print, 0);
+		DEBUG && safe_print_philo("DEBUG && Found out dead philo\n", philo);
 		return (1);
 	}
 	pthread_mutex_unlock(&philo->data->server_dead_philo);
