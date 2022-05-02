@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/02 16:06:50 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/02 17:43:47 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,4 +70,5 @@ int		ft_launch_philo(t_data *data);
 void	*philo_routine(void *philo_struct);
 unsigned long	ft_get_time(void);
 void	ft_join_philo(t_data *data);
+void	s_print(t_philo *philo, char *msg);
 #endif
