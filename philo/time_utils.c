@@ -1,29 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.c                                            :+:      :+:    :+:   */
+/*   time_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/02 09:49:35 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/02 16:28:22 by fle-blay         ###   ########.fr       */
+/*   Created: 2022/05/02 15:25:00 by fle-blay          #+#    #+#             */
+/*   Updated: 2022/05/02 15:57:14 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
-#include <stdio.h>
+#include <sys/time.h>
+#include <stddef.h>
 
-int	main(int ac, char *av[])
+unsigned long	ft_get_time(void)
 {
-	t_data	data;
-	int		error;
+	struct timeval now;
 
-	if (ft_init_data(&data, ac, av) == 0)
-		return (1);
-	error = (ft_launch_philo(&data) == 0);
-	pthread_mutex_unlock(&data.m_start);
-	ft_join_philo(&data);
-	ft_mutex_destroy(&data, ALL);
-	ft_deallocate(&data);
-	return (error);
+	gettimeofday(&now, NULL);
+	return (now.tv_sec * 1000 + now.tv_usec / 1000);
 }
