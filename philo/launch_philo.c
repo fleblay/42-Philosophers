@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 15:08:57 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/03 12:42:21 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/03 15:39:30 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,7 @@ static int	ft_launch_threads(t_data *data)
 		if (pthread_create(&data->thread[i], NULL,
 				philo_routine, &data->philo[i]))
 			return (0);
-
-		i+= 2;
+		i += 2;
 	}
 	i = 1;
 	while (i < data->philo_count)
@@ -49,7 +48,7 @@ static int	ft_launch_threads(t_data *data)
 		if (pthread_create(&data->thread[i], NULL,
 				philo_routine, &data->philo[i]))
 			return (0);
-		i+= 2;
+		i += 2;
 	}
 	return (1);
 }
@@ -71,11 +70,10 @@ int	ft_launch_philo(t_data *data)
 	return (1);
 }
 
-
 void	ft_join_philo(t_data *data)
 {
 	int	i;
-	
+
 	i = 0;
 	while (i < data->philo_count)
 	{

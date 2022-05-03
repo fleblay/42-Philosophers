@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 15:01:51 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/03 13:18:05 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/03 15:48:13 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,98 +14,29 @@
 #include <stddef.h>
 #include <unistd.h>
 
-int	ft_available_forks(t_philo *philo)
-{
-	int	free_fork;
-
-	free_fork = 0;
-	if (philo->left_fork == philo->right_fork)
-		return (0);
-	pthread_mutex_lock(&philo->data->m_fork[philo->left_fork]);
-	if (philo->data->fork_available[philo->left_fork] == 1)
-		++free_fork;
-	pthread_mutex_unlock(&philo->data->m_fork[philo->left_fork]);
-	pthread_mutex_lock(&philo->data->m_fork[philo->right_fork]);
-	if (philo->data->fork_available[philo->right_fork] == 1)
-		++free_fork;
-	pthread_mutex_unlock(&philo->data->m_fork[philo->right_fork]);
-	if (free_fork == 2)
-		return (1);
-	return (0);
-}
-
-void	ft_grab_forks(t_philo *philo)
-{
-
-	pthread_mutex_lock(&philo->data->m_fork[philo->left_fork]);
-	philo->data->fork_available[philo->left_fork] = 0;
-	s_print(philo, "has taken a fork", 0);
-	pthread_mutex_unlock(&philo->data->m_fork[philo->left_fork]);
-	pthread_mutex_lock(&philo->data->m_fork[philo->right_fork]);
-	philo->data->fork_available[philo->right_fork] = 0;
-	s_print(philo, "has taken a fork", 0);
-	pthread_mutex_unlock(&philo->data->m_fork[philo->right_fork]);
-}
-
-void	ft_release_forks(t_philo *philo)
-{
-
-	pthread_mutex_lock(&philo->data->m_fork[philo->left_fork]);
-	philo->data->fork_available[philo->left_fork] = 1;
-	pthread_mutex_unlock(&philo->data->m_fork[philo->left_fork]);
-	pthread_mutex_lock(&philo->data->m_fork[philo->right_fork]);
-	philo->data->fork_available[philo->right_fork] = 1;
-	pthread_mutex_unlock(&philo->data->m_fork[philo->right_fork]);
-}
-
 void	*philo_routine(void *philo_struct)
 {
 	t_philo	*philo;
-	
+
 	philo = (t_philo *)philo_struct;
-	pthread_mutex_lock(&philo->data->m_start);
-	philo->start_time = philo->data->start_time;
-	pthread_mutex_unlock(&philo->data->m_start);
+	ft_set_start_time(philo);
 	if (philo->start_time == 0)
 		return (NULL);
 	if (philo->id % 2 == 0)
-		usleep((philo->tte - 10)* 1000);
+		usleep((philo->tte - 10) * 1000);
 	while (philo->dead == 0)
 	{
-		s_print(philo, "in loop", 0);
-		pthread_mutex_lock(&philo->data->m_meal);
-		philo->meal_goal_achieved = ft_meal_goal_achieved(philo);
-		pthread_mutex_unlock(&philo->data->m_meal);
-		if (philo->meal_goal_achieved)
+		if (ft_preliminary_checks(philo) == 0)
 			break ;
-		pthread_mutex_lock(&philo->data->m_dead);
-		philo->dead += philo->data->dead_philo;
-		pthread_mutex_unlock(&philo->data->m_dead);
-		if (philo->dead)
-			break ;
-		philo->dead += ft_self_is_dead(philo);
-		if (philo->dead)
-			break ;
-		pthread_mutex_lock(&philo->data->m_check_fork);
-		philo->can_eat = ft_available_forks(philo);
-		pthread_mutex_unlock(&philo->data->m_check_fork);
+		ft_check_if_can_eat(philo);
 		if (philo->can_eat == 1)
 		{
-			pthread_mutex_lock(&philo->data->m_check_fork);
-			ft_grab_forks(philo);
-			pthread_mutex_unlock(&philo->data->m_check_fork);
-			if (ft_eat_for_time(philo) == 0)
+			if (!ft_grab_forks(philo) || !ft_eat(philo)
+				|| !ft_sleep(philo) || !ft_think(philo))
 				break ;
-			ft_release_forks(philo);
-			if (ft_sleep_for_time(philo) == 0)
-				break ;
-			s_print(philo, "is thinking", 0);
-			if (philo->ttd - philo->tte - philo->tts > 10)
-				usleep((philo->ttd - philo->tte - philo->tts - 10) * 1000);
 		}
 		else
 			usleep(100);
 	}
-	s_print(philo, "leaving", 0);
 	return (NULL);
 }

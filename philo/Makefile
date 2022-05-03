@@ -1,6 +1,8 @@
 SRCS_DIR	= .
 SRCS_LIST	= philo.c ft_satoi.c ft_putstr_fd.c init_data.c destroy_data.c\
-			launch_philo.c philo_routine.c time_utils.c print_utils.c meal.c
+			launch_philo.c philo_routine.c time_utils.c print_utils.c meal.c\
+			fork_utils.c philo_routine_utils.c
+
 
 SRCS		= $(addprefix $(SRCS_DIR)/, $(SRCS_LIST))
 
@@ -11,8 +13,8 @@ HEADER		= $(addprefix $(HEADER_DIR)/, $(HEADER_LIST))
 OBJS_DIR	= ./obj
 OBJS_LIST	= $(patsubst $(SRCS_DIR)%.c, $(OBJS_DIR)%.o, $(SRCS))
 
-CFLAGS		= -Wall -Wextra -Werror -g3 -fsanitize=thread
-#CFLAGS		= -Wall -Wextra -Werror
+#CFLAGS		= -Wall -Wextra -Werror -g3 -fsanitize=thread
+CFLAGS		= -Wall -Wextra -Werror -g3
 
 ifeq ($(MAKECMDGOALS), debug)
 CFLAGS		+= -D DEBUG=1

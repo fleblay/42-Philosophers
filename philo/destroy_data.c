@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 13:02:13 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/03 12:32:55 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/03 16:10:12 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ void	ft_deallocate(t_data *data)
 	free(data->fork_available);
 	free(data->thread);
 	free(data->m_fork);
+	free(data->meal_count);
 }
 
 void	ft_mutex_destroy(t_data *data, int flags)

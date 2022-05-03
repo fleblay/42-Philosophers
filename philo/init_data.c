@@ -6,15 +6,14 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 12:59:02 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/03 12:56:19 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/03 15:39:51 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 #include <stdlib.h>
-#include <stdio.h>
 
-static int	ft_get_param(t_data *data, int ac, char *av[])
+int	ft_get_param(t_data *data, int ac, char *av[])
 {
 	int	error;
 
@@ -42,7 +41,7 @@ static int	ft_get_param(t_data *data, int ac, char *av[])
 	return (1);
 }
 
-static int	ft_allocate(t_data *data)
+int	ft_allocate(t_data *data)
 {
 	data->philo = malloc(data->philo_count * sizeof(t_philo));
 	if (!data->philo)
@@ -66,7 +65,7 @@ static int	ft_allocate(t_data *data)
 	return (1);
 }
 
-static int	ft_mutex_init(t_data *data)
+static int	ft_mutex_init_forks(t_data *data)
 {
 	int	i;
 
@@ -81,6 +80,13 @@ static int	ft_mutex_init(t_data *data)
 		}
 		i++;
 	}
+	return (1);
+}
+
+int	ft_mutex_init(t_data *data)
+{
+	if (ft_mutex_init_forks(data) == 0)
+		return (0);
 	if (pthread_mutex_init(&data->m_print, NULL))
 		return (ft_mutex_destroy(data, FORK_TAB), 0);
 	if (pthread_mutex_init(&data->m_start, NULL))
@@ -91,14 +97,14 @@ static int	ft_mutex_init(t_data *data)
 		return (ft_mutex_destroy(data, FORK_TAB | PRINT | START | TIME), 0);
 	if (pthread_mutex_init(&data->m_check_fork, NULL))
 		return (ft_mutex_destroy(data,
-			FORK_TAB | PRINT | START | TIME | DEAD), 0);
+				FORK_TAB | PRINT | START | TIME | DEAD), 0);
 	if (pthread_mutex_init(&data->m_meal, NULL))
 		return (ft_mutex_destroy(data,
-			FORK_TAB | PRINT | START | TIME | DEAD | CHECK_FORK), 0);
+				FORK_TAB | PRINT | START | TIME | DEAD | CHECK_FORK), 0);
 	return (1);
 }
 
-static void	ft_set_data(t_data *data)
+void	ft_set_data(t_data *data)
 {
 	int	i;
 
@@ -110,17 +116,4 @@ static void	ft_set_data(t_data *data)
 		i++;
 	}
 	data->dead_philo = 0;
-}
-
-int	ft_init_data(t_data *data, int ac, char *av[])
-{
-	if (ac != 5 && ac != 6)
-		return (ft_putstr_fd("Error : wrong arg count\n", 2), 0);
-	if (!ft_get_param(data, ac, av) || !ft_allocate(data))
-		return (ft_putstr_fd("Error : wrong parameter \n", 2), 0);
-	if (!ft_mutex_init(data))
-		return (ft_deallocate(data),
-			ft_putstr_fd("Error : init mutexes \n", 2), 0);
-	ft_set_data(data);
-	return (1);
 }

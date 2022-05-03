@@ -6,12 +6,25 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 09:49:35 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/03 13:06:16 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/03 14:49:28 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 #include <stdio.h>
+
+int	ft_init_data(t_data *data, int ac, char *av[])
+{
+	if (ac != 5 && ac != 6)
+		return (ft_putstr_fd("Error : wrong arg count\n", 2), 0);
+	if (!ft_get_param(data, ac, av) || !ft_allocate(data))
+		return (ft_putstr_fd("Error : wrong parameter \n", 2), 0);
+	if (!ft_mutex_init(data))
+		return (ft_deallocate(data),
+			ft_putstr_fd("Error : init mutexes \n", 2), 0);
+	ft_set_data(data);
+	return (1);
+}
 
 int	main(int ac, char *av[])
 {
