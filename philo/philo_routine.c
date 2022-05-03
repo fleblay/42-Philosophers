@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 15:01:51 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/03 11:28:44 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/03 13:18:05 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,16 +72,28 @@ void	*philo_routine(void *philo_struct)
 		usleep((philo->tte - 10)* 1000);
 	while (philo->dead == 0)
 	{
-		if (ft_someone_is_dead(philo))
+		s_print(philo, "in loop", 0);
+		pthread_mutex_lock(&philo->data->m_meal);
+		philo->meal_goal_achieved = ft_meal_goal_achieved(philo);
+		pthread_mutex_unlock(&philo->data->m_meal);
+		if (philo->meal_goal_achieved)
 			break ;
-		pthread_mutex_lock(&philo->data->m_check);
+		pthread_mutex_lock(&philo->data->m_dead);
+		philo->dead += philo->data->dead_philo;
+		pthread_mutex_unlock(&philo->data->m_dead);
+		if (philo->dead)
+			break ;
+		philo->dead += ft_self_is_dead(philo);
+		if (philo->dead)
+			break ;
+		pthread_mutex_lock(&philo->data->m_check_fork);
 		philo->can_eat = ft_available_forks(philo);
-		pthread_mutex_unlock(&philo->data->m_check);
+		pthread_mutex_unlock(&philo->data->m_check_fork);
 		if (philo->can_eat == 1)
 		{
-			pthread_mutex_lock(&philo->data->m_check);
+			pthread_mutex_lock(&philo->data->m_check_fork);
 			ft_grab_forks(philo);
-			pthread_mutex_unlock(&philo->data->m_check);
+			pthread_mutex_unlock(&philo->data->m_check_fork);
 			if (ft_eat_for_time(philo) == 0)
 				break ;
 			ft_release_forks(philo);
@@ -94,5 +106,6 @@ void	*philo_routine(void *philo_struct)
 		else
 			usleep(100);
 	}
+	s_print(philo, "leaving", 0);
 	return (NULL);
 }

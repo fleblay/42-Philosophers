@@ -1,6 +1,6 @@
 SRCS_DIR	= .
 SRCS_LIST	= philo.c ft_satoi.c ft_putstr_fd.c init_data.c destroy_data.c\
-			launch_philo.c philo_routine.c time_utils.c print_utils.c
+			launch_philo.c philo_routine.c time_utils.c print_utils.c meal.c
 
 SRCS		= $(addprefix $(SRCS_DIR)/, $(SRCS_LIST))
 
