@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 15:08:57 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/02 16:22:58 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/03 11:27:17 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,10 @@ static void	ft_set_philo(t_data *data, t_philo *philo, int i)
 	philo->id = i + 1;
 	philo->dead = 0;
 	philo->philo_count = data->philo_count;
+	philo->can_eat = 0;
+	philo->last_start_eat = 0;
 	philo->meal_goal = data->meal_goal;
+	philo->meal_count = data->meal_goal;
 	philo->ttd = data->ttd;
 	philo->tte = data->tte;
 	philo->tts = data->tts;

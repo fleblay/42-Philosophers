@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/02 17:43:47 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/03 11:29:55 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@
 # define START 1<<2
 # define TIME 1<<3
 # define DEAD 1<<4
-# define ALL FORK_TAB | PRINT | START | TIME | DEAD
+# define CHECK 1<<5
+# define ALL FORK_TAB | PRINT | START | TIME | DEAD | CHECK
 
 typedef struct s_data {
 	struct s_philo	*philo;
@@ -44,6 +45,7 @@ typedef struct s_data {
 	pthread_mutex_t	m_start;
 	pthread_mutex_t	m_time;
 	pthread_mutex_t	m_dead;
+	pthread_mutex_t	m_check;
 }	t_data;	
 
 typedef struct s_philo {
@@ -52,6 +54,9 @@ typedef struct s_philo {
 	int				dead;
 	int				philo_count;
 	int				meal_goal;
+	int				can_eat;
+	int				last_start_eat;
+	int				last_start_sleep;
 	unsigned int	left_fork;
 	unsigned int	right_fork;
 	unsigned long	ttd;
@@ -70,5 +75,9 @@ int		ft_launch_philo(t_data *data);
 void	*philo_routine(void *philo_struct);
 unsigned long	ft_get_time(void);
 void	ft_join_philo(t_data *data);
-void	s_print(t_philo *philo, char *msg);
+void	s_print(t_philo *philo, char *msg, int dead);
+int		ft_someone_is_dead(t_philo *philo);
+int	ft_eat_for_time(t_philo *philo);
+int	ft_sleep_for_time(t_philo *philo);
+void	ft_release_forks(t_philo *philo);
 #endif

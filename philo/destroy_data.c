@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 13:02:13 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/02 16:12:31 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/03 09:51:10 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,4 +39,6 @@ void	ft_mutex_destroy(t_data *data, int flags)
 		pthread_mutex_destroy(&data->m_time);
 	if (flags & 1 << 4)
 		pthread_mutex_destroy(&data->m_dead);
+	if (flags & 1 << 5)
+		pthread_mutex_destroy(&data->m_check);
 }

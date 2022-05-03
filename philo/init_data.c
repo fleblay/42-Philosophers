@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 12:59:02 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/02 16:25:59 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/03 09:50:13 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,9 @@ static int	ft_mutex_init(t_data *data)
 		return (ft_mutex_destroy(data, FORK_TAB | PRINT | START), 0);
 	if (pthread_mutex_init(&data->m_dead, NULL))
 		return (ft_mutex_destroy(data, FORK_TAB | PRINT | START | TIME), 0);
+	if (pthread_mutex_init(&data->m_check, NULL))
+		return (ft_mutex_destroy(data,
+			FORK_TAB | PRINT | START | TIME | DEAD), 0);
 	return (1);
 }
 
