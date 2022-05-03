@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 09:49:35 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/03 14:49:28 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/03 17:36:20 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@ int	ft_init_data(t_data *data, int ac, char *av[])
 		return (ft_putstr_fd("Error : wrong arg count\n", 2), 0);
 	if (!ft_get_param(data, ac, av) || !ft_allocate(data))
 		return (ft_putstr_fd("Error : wrong parameter \n", 2), 0);
+	if (data->philo_count > 200 || data->ttd < 60
+		|| data->tte < 60 || data->tts < 60)
+		return (ft_putstr_fd("Error : out of bound parameter \n", 2), 0);
 	if (!ft_mutex_init(data))
 		return (ft_deallocate(data),
 			ft_putstr_fd("Error : init mutexes \n", 2), 0);

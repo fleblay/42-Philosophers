@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/03 14:43:52 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/03 15:40:12 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/03 17:23:06 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ int	ft_available_forks(t_philo *philo)
 
 int	ft_grab_forks(t_philo *philo)
 {
+	pthread_mutex_lock(&philo->data->m_check_fork);
 	pthread_mutex_lock(&philo->data->m_fork[philo->left_fork]);
 	philo->data->fork_available[philo->left_fork] = 0;
 	s_print(philo, "has taken a fork", 0);
@@ -42,6 +43,7 @@ int	ft_grab_forks(t_philo *philo)
 	philo->data->fork_available[philo->right_fork] = 0;
 	s_print(philo, "has taken a fork", 0);
 	pthread_mutex_unlock(&philo->data->m_fork[philo->right_fork]);
+	pthread_mutex_unlock(&philo->data->m_check_fork);
 	return (1);
 }
 
