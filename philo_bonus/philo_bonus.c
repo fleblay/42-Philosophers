@@ -1,17 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.c                                            :+:      :+:    :+:   */
+/*   philo_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 09:49:35 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/03 17:58:58 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/05 13:10:16 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
+#include <signal.h>
+#include <unistd.h>
 #include <stdio.h>
+#include <sys/wait.h>
 
 int	ft_init_data(t_data *data, int ac, char *av[])
 {
@@ -23,25 +26,54 @@ int	ft_init_data(t_data *data, int ac, char *av[])
 		|| data->tte < 60 || data->tts < 60)
 		return (ft_putstr_fd("Error : out of bound parameter\n", 2), 0);
 	if (!ft_allocate(data))
-		return (ft_putstr_fd("Error : init failure\n", 2), 0);
-	if (!ft_mutex_init(data))
-		return (ft_deallocate(data),
-			ft_putstr_fd("Error : init mutexes\n", 2), 0);
-	ft_set_data(data);
+		return (ft_putstr_fd("Error : allocate failure\n", 2), 0);
+	if (!ft_open_sem(data))
+		return (ft_putstr_fd("Error : init semaphore failure\n", 2), 0);
+	ft_set_data(data);	
 	return (1);
+}
+
+void	ft_kill_them_all(t_data *data, int i)
+{
+	// a faire proprement avec un semaphore dead pour pouvoir liberer proprement la memoire
+	int	index;
+
+	while (index < i)
+	{
+		kill(data->philo_pid[index], SIGINT);
+		index++;
+	}
 }
 
 int	main(int ac, char *av[])
 {
 	t_data	data;
-	int		error;
+	int	i;
 
 	if (ft_init_data(&data, ac, av) == 0)
 		return (1);
-	error = (ft_launch_philo(&data) == 0);
-	pthread_mutex_unlock(&data.m_start);
-	ft_join_philo(&data);
-	ft_mutex_destroy(&data, ALL);
-	ft_deallocate(&data);
-	return (error);
+	i = 0;
+	while (i < data.philo_count)
+	{
+		data.philo_pid[i] = fork();
+		if (data.philo_pid[i] == -1)
+		{
+			ft_kill_them_all(&data, i);
+			return (ft_putstr_fd("Error : fork failure\n", 2), 1);
+		}
+		if (data.philo_pid[i] == 0)
+		{
+			printf("from child %d\n", i);
+			return (0);
+		}
+		else
+		{
+			i++;
+		}
+	}
+	printf("from parent\n");
+	while (waitpid(-1, NULL, 0) != -1)
+		;
+	printf("from parent done waiting\n");
+	return (0);
 }

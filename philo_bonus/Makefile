@@ -1,13 +1,10 @@
 SRCS_DIR	= .
-SRCS_LIST	= philo.c ft_satoi.c ft_putstr_fd.c init_data.c destroy_data.c\
-			launch_philo.c philo_routine.c time_utils.c print_utils.c meal.c\
-			fork_utils.c philo_routine_utils.c
-
+SRCS_LIST	= philo_bonus.c ft_satoi.c ft_putstr_fd.c init_data.c
 
 SRCS		= $(addprefix $(SRCS_DIR)/, $(SRCS_LIST))
 
 HEADER_DIR	= .
-HEADER_LIST	= philo.h
+HEADER_LIST	= philo_bonus.h
 HEADER		= $(addprefix $(HEADER_DIR)/, $(HEADER_LIST))
 
 OBJS_DIR	= ./obj

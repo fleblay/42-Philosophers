@@ -6,12 +6,14 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 12:59:02 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/03 15:39:51 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/05 12:46:08 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 #include <stdlib.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 int	ft_get_param(t_data *data, int ac, char *av[])
 {
@@ -43,77 +45,69 @@ int	ft_get_param(t_data *data, int ac, char *av[])
 
 int	ft_allocate(t_data *data)
 {
-	data->philo = malloc(data->philo_count * sizeof(t_philo));
-	if (!data->philo)
-		return (ft_putstr_fd("Error : malloc\n", 2), 0);
-	data->fork_available = malloc(data->philo_count * sizeof(int));
-	if (!data->fork_available)
-		return (free(data->philo), ft_putstr_fd("Error : malloc\n", 2), 0);
-	data->thread = malloc(data->philo_count * sizeof(pthread_t));
-	if (!data->thread)
-		return (free(data->philo), free(data->fork_available),
-			ft_putstr_fd("Error : malloc\n", 2), 0);
-	data->m_fork = malloc(data->philo_count * sizeof(pthread_mutex_t));
-	if (!data->m_fork)
-		return (free(data->philo), free(data->fork_available),
-			free(data->thread), ft_putstr_fd("Error : malloc\n", 2), 0);
-	data->meal_count = malloc(data->philo_count * sizeof(int));
-	if (!data->meal_count)
-		return (free(data->philo), free(data->fork_available),
-			free(data->thread), free(data->m_fork),
-			ft_putstr_fd("Error : malloc\n", 2), 0);
-	return (1);
-}
-
-static int	ft_mutex_init_forks(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->philo_count)
-	{
-		if (pthread_mutex_init(&data->m_fork[i], NULL))
-		{
-			while (--i >= 0)
-				pthread_mutex_destroy(&data->m_fork[i]);
-			return (0);
-		}
-		i++;
-	}
-	return (1);
-}
-
-int	ft_mutex_init(t_data *data)
-{
-	if (ft_mutex_init_forks(data) == 0)
+	data->philo_pid = (pid_t *)malloc(data->philo_count * sizeof(pid_t));
+	if (data->philo_pid == NULL)
 		return (0);
-	if (pthread_mutex_init(&data->m_print, NULL))
-		return (ft_mutex_destroy(data, FORK_TAB), 0);
-	if (pthread_mutex_init(&data->m_start, NULL))
-		return (ft_mutex_destroy(data, FORK_TAB | PRINT), 0);
-	if (pthread_mutex_init(&data->m_time, NULL))
-		return (ft_mutex_destroy(data, FORK_TAB | PRINT | START), 0);
-	if (pthread_mutex_init(&data->m_dead, NULL))
-		return (ft_mutex_destroy(data, FORK_TAB | PRINT | START | TIME), 0);
-	if (pthread_mutex_init(&data->m_check_fork, NULL))
-		return (ft_mutex_destroy(data,
-				FORK_TAB | PRINT | START | TIME | DEAD), 0);
-	if (pthread_mutex_init(&data->m_meal, NULL))
-		return (ft_mutex_destroy(data,
-				FORK_TAB | PRINT | START | TIME | DEAD | CHECK_FORK), 0);
 	return (1);
 }
 
-void	ft_set_data(t_data *data)
+int ft_open_sem(t_data *data)
 {
-	int	i;
+	data->s_print = sem_open("/s_print", O_CREAT, 0644, 1);
+	if (data->s_print == SEM_FAILED)
+		return (0);
+	data->s_start = sem_open("/s_start", O_CREAT, 0644, 0);
+	if (data->s_start == SEM_FAILED)
+		return (ft_sem_destroy(data, PRINT), 0);
+	data->s_dead = sem_open("/s_dead", O_CREAT, 0644, 0);
+	if (data->s_dead == SEM_FAILED)
+		return (ft_sem_destroy(data, PRINT | START), 0);
+	data->s_meal = sem_open("/s_meal", O_CREAT, 0644, 0);
+	if (data->s_meal == SEM_FAILED)
+		return (ft_sem_destroy(data, PRINT | START | DEAD), 0);
+	data->s_fork = sem_open("/s_meal", O_CREAT, 0644, data->philo_count);
+	if (data->s_fork == SEM_FAILED)
+		return (ft_sem_destroy(data, PRINT | START | DEAD | MEAL), 0);
+	return (1);
+}
 
-	i = 0;
-	while (i < data->philo_count)
+void	ft_sem_destroy(t_data *data, int flags)
+{
+	if (flags & 1 << 0)
 	{
-		data->fork_available[i] = 1;
-		data->meal_count[i] = 0;
-		i++;
+		sem_close(data->s_print);
+		sem_unlink("/s_print");
 	}
-	data->dead_philo = 0;
+	if (flags & 1 << 1)
+	{
+		sem_close(data->s_start);
+		sem_unlink("/s_start");
+	}
+	if (flags & 1 << 2)
+	{
+		sem_close(data->s_dead);
+		sem_unlink("/s_dead");
+	}
+	if (flags & 1 << 3)
+	{
+		sem_close(data->s_meal);
+		sem_unlink("/s_meal");
+	}
+	if (flags & 1 << 4)
+	{
+		sem_close(data->s_fork);
+		sem_unlink("/s_fork");
+	}
+}
+
+void	ft_set_data(t_data *data)	
+{
+	data->dead = 0;
+	data->last_start_eat = 0;
+	data->last_start_sleep = 0;
+	data->last_start_think = 0;
+	if (data->meal_goal == 0)
+		data->meal_goal_achieved = 1;
+	else
+		data->meal_goal_achieved = 0;
 }
