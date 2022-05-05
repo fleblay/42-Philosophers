@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 12:59:02 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/05 12:46:08 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/05 16:21:22 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,31 @@ int	ft_allocate(t_data *data)
 	return (1);
 }
 
+/*
 int ft_open_sem(t_data *data)
 {
-	data->s_print = sem_open("/s_print", O_CREAT, 0644, 1);
+	data->s_print = sem_open("/s_print", 0);
+	if (data->s_print == SEM_FAILED)
+		return (0);
+	data->s_start = sem_open("/s_start", 0);
+	if (data->s_start == SEM_FAILED)
+		return (ft_sem_destroy(data, PRINT), 0);
+	data->s_dead = sem_open("/s_dead", 0);
+	if (data->s_dead == SEM_FAILED)
+		return (ft_sem_destroy(data, PRINT | START), 0);
+	data->s_meal = sem_open("/s_meal", 0);
+	if (data->s_meal == SEM_FAILED)
+		return (ft_sem_destroy(data, PRINT | START | DEAD), 0);
+	data->s_fork = sem_open("/s_meal", 0);
+	if (data->s_fork == SEM_FAILED)
+		return (ft_sem_destroy(data, PRINT | START | DEAD | MEAL), 0);
+	return (1);
+}
+*/
+
+int ft_create_sem(t_data *data)
+{
+	data->s_print = sem_open("/s_print", O_CREAT, 0644, 0);
 	if (data->s_print == SEM_FAILED)
 		return (0);
 	data->s_start = sem_open("/s_start", O_CREAT, 0644, 0);
@@ -69,35 +91,6 @@ int ft_open_sem(t_data *data)
 	if (data->s_fork == SEM_FAILED)
 		return (ft_sem_destroy(data, PRINT | START | DEAD | MEAL), 0);
 	return (1);
-}
-
-void	ft_sem_destroy(t_data *data, int flags)
-{
-	if (flags & 1 << 0)
-	{
-		sem_close(data->s_print);
-		sem_unlink("/s_print");
-	}
-	if (flags & 1 << 1)
-	{
-		sem_close(data->s_start);
-		sem_unlink("/s_start");
-	}
-	if (flags & 1 << 2)
-	{
-		sem_close(data->s_dead);
-		sem_unlink("/s_dead");
-	}
-	if (flags & 1 << 3)
-	{
-		sem_close(data->s_meal);
-		sem_unlink("/s_meal");
-	}
-	if (flags & 1 << 4)
-	{
-		sem_close(data->s_fork);
-		sem_unlink("/s_fork");
-	}
 }
 
 void	ft_set_data(t_data *data)	

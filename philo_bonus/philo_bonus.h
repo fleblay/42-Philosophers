@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/05 12:46:24 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/05 16:21:33 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,14 @@ long			ft_satoi(const char *nptr, int *error);
 void			ft_putstr_fd(char *s, int fd);
 int				ft_init_data(t_data *data, int ac, char *av[]);
 int				ft_get_param(t_data *data, int ac, char *av[]);
+int				ft_create_sem(t_data *data);
 int				ft_open_sem(t_data *data);
 void			ft_sem_destroy(t_data *data, int flags);
 void			ft_set_data(t_data *data);
 int				ft_allocate(t_data *data);
+void			ft_sem_close(t_data *data, int flags);
+void			ft_sem_destroy(t_data *data, int flags);
+void			ft_sem_unlink(int flags);
+void			ft_deallocate(t_data *data);
+int				ft_philo_routine(t_data *data, int i);
 #endif

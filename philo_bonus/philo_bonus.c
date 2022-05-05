@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 09:49:35 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/05 13:10:16 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/05 16:35:36 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ int	ft_init_data(t_data *data, int ac, char *av[])
 		return (ft_putstr_fd("Error : out of bound parameter\n", 2), 0);
 	if (!ft_allocate(data))
 		return (ft_putstr_fd("Error : allocate failure\n", 2), 0);
-	if (!ft_open_sem(data))
+	ft_sem_unlink(ALL);
+	if (!ft_create_sem(data))
 		return (ft_putstr_fd("Error : init semaphore failure\n", 2), 0);
 	ft_set_data(data);	
 	return (1);
@@ -35,7 +36,7 @@ int	ft_init_data(t_data *data, int ac, char *av[])
 
 void	ft_kill_them_all(t_data *data, int i)
 {
-	// a faire proprement avec un semaphore dead pour pouvoir liberer proprement la memoire
+	//a faire propreement avec un sempost sur dead;
 	int	index;
 
 	while (index < i)
@@ -45,9 +46,26 @@ void	ft_kill_them_all(t_data *data, int i)
 	}
 }
 
+void	*ft_meal_monitor(void *param)
+{
+	t_data		*data;
+	int			satiated_philo;
+
+	data = (t_data *)param;
+	satiated_philo = 0;
+	while (satiated_philo != data->philo_count)
+	{
+		sem_wait(data->s_meal);
+		satiated_philo++;
+	}
+	sem_post(data->s_dead);
+	return (NULL);
+}
+
 int	main(int ac, char *av[])
 {
-	t_data	data;
+	t_data		data;
+	pthread_t	meal_goal_monitor;
 	int	i;
 
 	if (ft_init_data(&data, ac, av) == 0)
@@ -63,8 +81,7 @@ int	main(int ac, char *av[])
 		}
 		if (data.philo_pid[i] == 0)
 		{
-			printf("from child %d\n", i);
-			return (0);
+			return (ft_philo_routine(&data, i));
 		}
 		else
 		{
@@ -72,8 +89,12 @@ int	main(int ac, char *av[])
 		}
 	}
 	printf("from parent\n");
-	while (waitpid(-1, NULL, 0) != -1)
+	pthread_create(&meal_goal_monitor, NULL, ft_meal_monitor, &data);
+	pthread_detach(meal_goal_monitor);
+	sem_post(data.s_start);
+	while (waitpid(-1, NULL, 0) > 0)
 		;
-	printf("from parent done waiting\n");
+	ft_sem_destroy(&data, ALL);
+	ft_deallocate(&data);
 	return (0);
 }
