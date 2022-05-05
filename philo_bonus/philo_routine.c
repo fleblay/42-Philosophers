@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/05 14:29:05 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/05 16:34:44 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/05 17:53:11 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,15 @@
 #include <unistd.h>
 #include <signal.h>
 
-void	*ft_death_monitor(void *param)
+void	*ft_self_death_monitor(void *param)
 {
 	t_data		*data;
 
 	data = (t_data *)param;
 	sem_wait(data->s_dead);
 	data->dead = 1;
-	sem_post(data->s_dead);
+	//to kill meal deamon
+	sem_post(data->s_meal);
 	return (NULL);
 }
 
@@ -32,25 +33,25 @@ int	ft_philo_routine(t_data *data, int i)
 	int			index;
 
 	index = 0;
+	pthread_create(&death_monitor, NULL, ft_self_death_monitor, data);
+	pthread_detach(death_monitor);
 	sem_wait(data->s_start);
 	printf("from child %d\n", i);
-	sem_post(data->s_start);
-	pthread_create(&death_monitor, NULL, ft_death_monitor, data);
-	pthread_detach(death_monitor);
 	while (!data->dead)
 	{
+		/*
 		if (index == 4)
 		{
 			sem_post(data->s_meal);
 		}
+		*/
 
 		// test dead philo
-		/*
 		if (i == 2 && index == 2)
 		{
-			sem_post(data->s_dead);
+			sem_post(data->s_dead_signal);
 		}
-		*/
+		
 		// test dead philo
 		usleep(1000000);
 		printf("loop from child %d\n", i);

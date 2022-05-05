@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/05 14:49:15 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/05 15:18:05 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/05 17:32:32 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ void	ft_sem_close(t_data *data, int flags)
 		sem_close(data->s_meal);
 	if (flags & 1 << 4)
 		sem_close(data->s_fork);
+	if (flags & 1 << 5)
+		sem_close(data->s_dead_signal);
 }
 
 void	ft_sem_unlink(int flags)
@@ -39,6 +41,8 @@ void	ft_sem_unlink(int flags)
 		sem_unlink("/s_meal");
 	if (flags & 1 << 4)
 		sem_unlink("/s_fork");
+	if (flags & 1 << 5)
+		sem_unlink("/s_dead_signal");
 }
 
 void	ft_sem_destroy(t_data *data, int flags)

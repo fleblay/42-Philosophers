@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 09:49:35 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/05 16:35:36 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/05 17:54:29 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,31 +34,45 @@ int	ft_init_data(t_data *data, int ac, char *av[])
 	return (1);
 }
 
-void	ft_kill_them_all(t_data *data, int i)
-{
-	//a faire propreement avec un sempost sur dead;
-	int	index;
-
-	while (index < i)
-	{
-		kill(data->philo_pid[index], SIGINT);
-		index++;
-	}
-}
-
 void	*ft_meal_monitor(void *param)
 {
 	t_data		*data;
 	int			satiated_philo;
+	int			i;
 
 	data = (t_data *)param;
 	satiated_philo = 0;
-	while (satiated_philo != data->philo_count)
+	while (satiated_philo < data->philo_count)
 	{
 		sem_wait(data->s_meal);
 		satiated_philo++;
 	}
-	sem_post(data->s_dead);
+	printf("\x1b[33ma meal goal achieved\x1b[0m\n");
+	i = 0;
+	while (i < data->philo_count)
+	{
+		sem_post(data->s_dead);
+		i++;
+	}
+	//to kill dead_monitor
+	sem_post(data->s_dead_signal);
+	return (NULL);
+}
+
+void	*ft_dead_monitor(void *param)
+{
+	t_data		*data;
+	int			i;
+
+	data = (t_data *)param;
+	i = 0;
+	sem_wait(data->s_dead_signal);
+	printf("\x1b[33ma philo is dead\x1b[0m\n");
+	while (i < data->philo_count)
+	{
+		sem_post(data->s_dead);
+		i++;
+	}
 	return (NULL);
 }
 
@@ -66,6 +80,7 @@ int	main(int ac, char *av[])
 {
 	t_data		data;
 	pthread_t	meal_goal_monitor;
+	pthread_t	dead_monitor;
 	int	i;
 
 	if (ft_init_data(&data, ac, av) == 0)
@@ -76,7 +91,7 @@ int	main(int ac, char *av[])
 		data.philo_pid[i] = fork();
 		if (data.philo_pid[i] == -1)
 		{
-			ft_kill_them_all(&data, i);
+			//to fix
 			return (ft_putstr_fd("Error : fork failure\n", 2), 1);
 		}
 		if (data.philo_pid[i] == 0)
@@ -91,7 +106,14 @@ int	main(int ac, char *av[])
 	printf("from parent\n");
 	pthread_create(&meal_goal_monitor, NULL, ft_meal_monitor, &data);
 	pthread_detach(meal_goal_monitor);
-	sem_post(data.s_start);
+	pthread_create(&dead_monitor, NULL, ft_dead_monitor, &data);
+	pthread_detach(dead_monitor);
+	i = 0;
+	while (i < data.philo_count)
+	{
+		sem_post(data.s_start);
+		i++;
+	}
 	while (waitpid(-1, NULL, 0) > 0)
 		;
 	ft_sem_destroy(&data, ALL);
