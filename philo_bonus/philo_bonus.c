@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 09:49:35 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/05 17:54:29 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/06 11:21:32 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,9 @@ int	ft_init_data(t_data *data, int ac, char *av[])
 	if (!ft_allocate(data))
 		return (ft_putstr_fd("Error : allocate failure\n", 2), 0);
 	ft_sem_unlink(ALL);
-	if (!ft_create_sem(data))
-		return (ft_putstr_fd("Error : init semaphore failure\n", 2), 0);
+	if (!ft_create_sem_tab(data) || !ft_create_sem(data))
+		return (ft_deallocate(data),
+			ft_putstr_fd("Error : init semaphore failure\n", 2), 0);
 	ft_set_data(data);	
 	return (1);
 }
@@ -47,15 +48,27 @@ void	*ft_meal_monitor(void *param)
 		sem_wait(data->s_meal);
 		satiated_philo++;
 	}
-	printf("\x1b[33ma meal goal achieved\x1b[0m\n");
+	printf("\x1b[33mmeal goal achieved\x1b[0m\n");
 	i = 0;
 	while (i < data->philo_count)
 	{
-		sem_post(data->s_dead);
+		sem_post(data->s_end_simu);
 		i++;
 	}
-	//to kill dead_monitor
+	i = 0;
+	while (i < data->philo_count)
+	{
+		sem_wait(data->s_ack_msg);
+		i++;
+	}
+	//to kill dead_monitor - simulate dead signal and ack
 	sem_post(data->s_dead_signal);
+	i = 0;
+	while (i < data->philo_count)
+	{
+		sem_post(data->s_ack_msg);
+		i++;
+	}
 	return (NULL);
 }
 
@@ -70,7 +83,21 @@ void	*ft_dead_monitor(void *param)
 	printf("\x1b[33ma philo is dead\x1b[0m\n");
 	while (i < data->philo_count)
 	{
-		sem_post(data->s_dead);
+		sem_post(data->s_end_simu);
+		i++;
+	}
+	i = 0;
+	while (i < data->philo_count)
+	{
+		sem_wait(data->s_ack_msg);
+		i++;
+	}
+	//to kill meal deamon - simulate satiated philo and ack
+	i = 0;
+	while (i < data->philo_count)
+	{
+		sem_post(data->s_meal);
+		sem_post(data->s_ack_msg);
 		i++;
 	}
 	return (NULL);
@@ -91,7 +118,8 @@ int	main(int ac, char *av[])
 		data.philo_pid[i] = fork();
 		if (data.philo_pid[i] == -1)
 		{
-			//to fix
+			ft_sem_destroy(&data, ALL);
+			ft_deallocate(&data);
 			return (ft_putstr_fd("Error : fork failure\n", 2), 1);
 		}
 		if (data.philo_pid[i] == 0)
@@ -104,11 +132,11 @@ int	main(int ac, char *av[])
 		}
 	}
 	printf("from parent\n");
+	// Ajout d'un check sur le fail des init create
 	pthread_create(&meal_goal_monitor, NULL, ft_meal_monitor, &data);
-	pthread_detach(meal_goal_monitor);
 	pthread_create(&dead_monitor, NULL, ft_dead_monitor, &data);
-	pthread_detach(dead_monitor);
 	i = 0;
+	// Ajout d'un sem pour wait les init de deamons de philo
 	while (i < data.philo_count)
 	{
 		sem_post(data.s_start);
@@ -116,6 +144,8 @@ int	main(int ac, char *av[])
 	}
 	while (waitpid(-1, NULL, 0) > 0)
 		;
+	pthread_join(meal_goal_monitor, NULL);
+	pthread_join(dead_monitor, NULL);
 	ft_sem_destroy(&data, ALL);
 	ft_deallocate(&data);
 	return (0);
