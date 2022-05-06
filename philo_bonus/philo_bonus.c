@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 09:49:35 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/06 11:21:32 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/06 12:35:44 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	ft_init_data(t_data *data, int ac, char *av[])
 		return (ft_putstr_fd("Error : out of bound parameter\n", 2), 0);
 	if (!ft_allocate(data))
 		return (ft_putstr_fd("Error : allocate failure\n", 2), 0);
-	ft_sem_unlink(ALL);
+	ft_sem_unlink(data, ALL);
 	if (!ft_create_sem_tab(data) || !ft_create_sem(data))
 		return (ft_deallocate(data),
 			ft_putstr_fd("Error : init semaphore failure\n", 2), 0);
@@ -132,11 +132,16 @@ int	main(int ac, char *av[])
 		}
 	}
 	printf("from parent\n");
-	// Ajout d'un check sur le fail des init create
 	pthread_create(&meal_goal_monitor, NULL, ft_meal_monitor, &data);
 	pthread_create(&dead_monitor, NULL, ft_dead_monitor, &data);
+	// On wait la creation des deamons
 	i = 0;
-	// Ajout d'un sem pour wait les init de deamons de philo
+	while (i < data.philo_count)
+	{
+		sem_wait(data.s_philo_deamon);
+		i++;
+	}
+	i = 0;
 	while (i < data.philo_count)
 	{
 		sem_post(data.s_start);

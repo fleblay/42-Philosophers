@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 12:59:02 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/06 11:21:46 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/06 12:44:51 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,26 +92,31 @@ int ft_create_sem(t_data *data)
 {
 	data->s_print = sem_open("/s_print", O_CREAT, 0644, 0);
 	if (data->s_print == SEM_FAILED)
-		return (0);
+		return (ft_sem_destroy(data, SELF_DEAD), 0);
 	data->s_start = sem_open("/s_start", O_CREAT, 0644, 0);
 	if (data->s_start == SEM_FAILED)
-		return (ft_sem_destroy(data, PRINT), 0);
+		return (ft_sem_destroy(data, SELF_DEAD | PRINT), 0);
 	data->s_end_simu = sem_open("/s_end_simu", O_CREAT, 0644, 0);
 	if (data->s_end_simu == SEM_FAILED)
-		return (ft_sem_destroy(data, PRINT | START), 0);
+		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START), 0);
 	data->s_meal = sem_open("/s_meal", O_CREAT, 0644, 0);
 	if (data->s_meal == SEM_FAILED)
-		return (ft_sem_destroy(data, PRINT | START | END_SIM), 0);
+		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM), 0);
 	data->s_fork = sem_open("/s_fork", O_CREAT, 0644, data->philo_count);
 	if (data->s_fork == SEM_FAILED)
-		return (ft_sem_destroy(data, PRINT | START | END_SIM | MEAL), 0);
+		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM | MEAL), 0);
 	data->s_dead_signal = sem_open("/s_dead_signal", O_CREAT, 0644, 0);
 	if (data->s_dead_signal == SEM_FAILED)
-		return (ft_sem_destroy(data, PRINT | START | END_SIM | MEAL | FORK), 0);
+		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
+				| MEAL | FORK), 0);
 	data->s_ack_msg = sem_open("/s_ack_msg", O_CREAT, 0644, 0);
 	if (data->s_ack_msg == SEM_FAILED)
-		return (ft_sem_destroy(data, PRINT | START | END_SIM | MEAL | FORK
-				| DEAD_SIGN), 0);
+		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
+				| MEAL | FORK | DEAD_SIGN), 0);
+	data->s_philo_deamon = sem_open("/s_philo_deamon", O_CREAT, 0644, 0);
+	if (data->s_philo_deamon == SEM_FAILED)
+		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
+				| MEAL | FORK | DEAD_SIGN | ACK_MSG), 0);
 	return (1);
 }
 
@@ -140,6 +145,7 @@ int	ft_create_sem_tab(t_data *data)
 void	ft_set_data(t_data *data)	
 {
 	data->dead = 0;
+	data->go_on = 1;
 	data->last_start_eat = 0;
 	data->last_start_sleep = 0;
 	data->last_start_think = 0;

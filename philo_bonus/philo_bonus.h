@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/06 11:21:18 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/06 13:15:08 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,9 @@
 # define FORK 16
 # define DEAD_SIGN 32
 # define ACK_MSG 64
-# define ALL 127
+# define DEAMON 128
+# define SELF_DEAD 256
+# define ALL 511
 
 # include <pthread.h>
 # include <semaphore.h>
@@ -46,13 +48,16 @@ typedef struct s_data {
 	sem_t			*s_fork;
 	sem_t			*s_dead_signal;
 	sem_t			*s_ack_msg;
+	sem_t			*s_philo_deamon;
 	sem_t			**s_self_dead;
 	char			**self_dead_name;
 	int				dead;
+	int				go_on;
 	int				last_start_eat;
 	int				last_start_sleep;
 	int				last_start_think;
 	int				meal_goal_achieved;
+	int				id;
 	pid_t			*philo_pid;
 
 	unsigned long	start_time;
@@ -71,7 +76,7 @@ void			ft_set_data(t_data *data);
 int				ft_allocate(t_data *data);
 void			ft_sem_close(t_data *data, int flags);
 void			ft_sem_destroy(t_data *data, int flags);
-void			ft_sem_unlink(int flags);
+void			ft_sem_unlink(t_data * data, int flags);
 void			ft_deallocate(t_data *data);
 int				ft_philo_routine(t_data *data, int i);
 #endif
