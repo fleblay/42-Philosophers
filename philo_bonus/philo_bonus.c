@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 09:49:35 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/06 12:35:44 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/06 15:21:08 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,11 @@ int	main(int ac, char *av[])
 	i = 0;
 	while (i < data.philo_count)
 	{
-		data.philo_pid[i] = fork();
+		if (i == 2)
+			data.philo_pid[i] = -1;
+		else
+			data.philo_pid[i] = fork();
+		// to fix
 		if (data.philo_pid[i] == -1)
 		{
 			ft_sem_destroy(&data, ALL);
