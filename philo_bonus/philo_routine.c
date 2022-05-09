@@ -6,12 +6,13 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/05 14:29:05 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/09 12:54:33 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/09 16:50:15 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
 
@@ -28,10 +29,6 @@ void	*ft_end_simulation(void *param)
 	t_data		*data;
 
 	data = (t_data *)param;
-	// pour empecher debut boucle data->go_on en cas de thead_init failure d'un autre
-	// on bloque le check d'avant le debut de boucle en ayant le sem a 0 avant de
-	// rentrer dans cette fonction
-	//to fix
 	sem_wait(data->s_end_simu);
 	sem_wait(data->s_self_dead[data->id]);
 	data->dead = 1;
@@ -41,22 +38,17 @@ void	*ft_end_simulation(void *param)
 	return (NULL);
 }
 
-int	ft_philo_routine(t_data *data, int i)
+//keeping res for testing purposes
+void	ft_create_philo_monitor(t_data *data, pthread_t *death_monitor)
 {
-	pthread_t	death_monitor;
-	int			index;
-	int			res;
+	int	res;
 
-	data->id = i;
-	index = 0;
-	// Ajout d'un check sur le fail des init create
-	///*
-	printf("from child %d\n", i);
+	/*
 	if (data->id == 2)
 		res = 1;
 	else
-	//*/
-		res = pthread_create(&death_monitor, NULL, ft_end_simulation, data); 
+	*/
+	res = pthread_create(death_monitor, NULL, ft_end_simulation, data); 
 	if (res)
 	{
 		sem_post(data->s_dead_signal);
@@ -67,8 +59,19 @@ int	ft_philo_routine(t_data *data, int i)
 		sem_post(data->s_philo_deamon);
 		ft_sem_destroy(data, ALL);
 		ft_deallocate(data);
-		return (ft_putstr_fd("Error : thread create failure in philo\n", 2), 1);
+		ft_putstr_fd("Error : thread create failure in philo\n", 2);
+		exit (1);
 	}
+}
+
+int	ft_philo_routine(t_data *data, int i)
+{
+	pthread_t	death_monitor;
+	int			index;
+
+	data->id = i;
+	index = 0;
+	ft_create_philo_monitor(data, &death_monitor);
 	printf("Deamon is up and running %d\n", data->id);
 	sem_post(data->s_philo_deamon);
 	sem_wait(data->s_start);
@@ -78,12 +81,10 @@ int	ft_philo_routine(t_data *data, int i)
 	while (data->go_on)
 	{
 		// test satiated philo
-		///*
 		if (index == 4)
 		{
 			sem_post(data->s_meal);
 		}
-		//*/
 		// test satiated philo
 
 		// test dead philo

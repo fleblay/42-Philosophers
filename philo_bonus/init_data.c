@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 12:59:02 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/09 12:03:57 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/09 15:51:13 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,6 @@ char *ft_create_self_dead_sem_name(int i)
 	name[9] = i / 100 + 48; 
 	name[10] = i / 10 - (i / 100) * 10 + 48; 
 	name[11] = i - (i / 10) * 10 - (i / 100) * 100 + 48;
-	//printf("name : [%s]\n", name);
 	return (name);
 }
 
@@ -88,37 +87,37 @@ int	ft_allocate(t_data *data)
 	return (1);
 }
 
+int	ft_safe_sem_open(sem_t **sem_ptr, char *sem_name, int value)
+{
+	*sem_ptr = sem_open(sem_name, O_CREAT, 0644, value);
+	if (*sem_ptr == SEM_FAILED)
+		return (0);
+	return (1);
+}
+
 int ft_create_sem(t_data *data)
 {
-	data->s_print = sem_open("/s_print", O_CREAT, 0644, 0);
-	if (data->s_print == SEM_FAILED)
+	if (!ft_safe_sem_open(&data->s_print, "/s_print", 0))
 		return (ft_sem_destroy(data, SELF_DEAD), 0);
-	data->s_start = sem_open("/s_start", O_CREAT, 0644, 0);
-	if (data->s_start == SEM_FAILED)
+	if (!ft_safe_sem_open(&data->s_start, "/s_start", 0))
 		return (ft_sem_destroy(data, SELF_DEAD | PRINT), 0);
-	data->s_end_simu = sem_open("/s_end_simu", O_CREAT, 0644, 0);
-	if (data->s_end_simu == SEM_FAILED)
+	if (!ft_safe_sem_open(&data->s_end_simu, "/s_end_simu", 0))
 		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START), 0);
-	data->s_meal = sem_open("/s_meal", O_CREAT, 0644, 0);
-	if (data->s_meal == SEM_FAILED)
+	if (!ft_safe_sem_open(&data->s_meal, "/s_meal", 0))
 		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM), 0);
-	data->s_fork = sem_open("/s_fork", O_CREAT, 0644, data->philo_count);
-	if (data->s_fork == SEM_FAILED)
-		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM | MEAL), 0);
-	data->s_dead_signal = sem_open("/s_dead_signal", O_CREAT, 0644, 0);
-	if (data->s_dead_signal == SEM_FAILED)
+	if (!ft_safe_sem_open(&data->s_fork, "/s_fork", 0))
+		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
+		| MEAL), 0);
+	if (!ft_safe_sem_open(&data->s_dead_signal, "/s_dead_signal", 0))
 		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
 				| MEAL | FORK), 0);
-	data->s_ack_msg = sem_open("/s_ack_msg", O_CREAT, 0644, 0);
-	if (data->s_ack_msg == SEM_FAILED)
+	if (!ft_safe_sem_open(&data->s_ack_msg, "/s_ack_msg", 0))
 		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
 				| MEAL | FORK | DEAD_SIGN), 0);
-	data->s_philo_deamon = sem_open("/s_philo_deamon", O_CREAT, 0644, 0);
-	if (data->s_philo_deamon == SEM_FAILED)
+	if (!ft_safe_sem_open(&data->s_philo_deamon, "/s_philo_deamon", 0))
 		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
 				| MEAL | FORK | DEAD_SIGN | ACK_MSG), 0);
-	data->s_end_of_termination = sem_open("/s_eot", O_CREAT, 0644, 0);
-	if (data->s_end_of_termination == SEM_FAILED)
+	if (!ft_safe_sem_open(&data->s_end_of_termination, "/s_eot", 0))
 		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
 				| MEAL | FORK | DEAD_SIGN | ACK_MSG | DEAMON), 0);
 	return (1);
@@ -131,7 +130,8 @@ int	ft_create_sem_tab(t_data *data)
 	i = 0;
 	while (i < data->philo_count)
 	{
-		data->s_self_dead[i] = sem_open(data->self_dead_name[i], O_CREAT, 0644, 1);
+		data->s_self_dead[i] = sem_open(data->self_dead_name[i],
+			O_CREAT, 0644, 1);
 		if (data->s_self_dead[i] == SEM_FAILED)
 		{
 			while (--i >= 0)

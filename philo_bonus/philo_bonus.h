@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/09 12:01:21 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/09 16:17:11 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,9 @@ typedef struct s_data {
 	int				meal_goal_achieved;
 	int				id;
 	pid_t			*philo_pid;
+	pthread_t		meal_goal_monitor;
+	pthread_t		dead_monitor;
+
 
 	unsigned long	start_time;
 	unsigned long	current_time;
@@ -77,7 +80,6 @@ void			ft_sem_destroy(t_data *data, int flags);
 void			ft_set_data(t_data *data);
 int				ft_allocate(t_data *data);
 void			ft_sem_close(t_data *data, int flags);
-void			ft_sem_destroy(t_data *data, int flags);
 void			ft_sem_unlink(t_data * data, int flags);
 void			ft_deallocate(t_data *data);
 int				ft_philo_routine(t_data *data, int i);
