@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/05 14:49:15 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/09 12:05:21 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/09 13:10:58 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ void	ft_sem_unlink(t_data *data, int flags)
 	if (flags & 1 << 7)
 		sem_unlink("/s_philo_deamon");
 	if (flags & 1 << 8)
-		sem_unlink("/s_end_of_termination");
+		sem_unlink("/s_eot");
 	i = 0;
 	if (flags & 1 << 9)
 	{

@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 09:49:35 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/09 12:38:55 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/09 13:09:55 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,18 +141,16 @@ int	main(int ac, char *av[])
 	i = 0;
 	while (i < data.philo_count)
 	{
-		/*
 		if (i == 2)
 			data.philo_pid[i] = -1;
 		else
-		*/
 			data.philo_pid[i] = fork();
 		// to fix
 		if (data.philo_pid[i] == -1)
 		{
 			printf("simulating dead sign\n");
 			sem_post(data.s_dead_signal);
-			while (i <= data.philo_count)
+			while (i < data.philo_count)
 			{
 				printf("simulating ack sign\n");
 				sem_post(data.s_ack_msg);
@@ -160,7 +158,8 @@ int	main(int ac, char *av[])
 			}
 			printf("waiting for end of ack\n");
 			sem_wait(data.s_end_of_termination);
-			printf("waiting for end of ack\n");
+			sem_post(data.s_end_of_termination);
+			printf("termination over\n");
 			i = 0;
 			while (i < data.philo_count)
 			{

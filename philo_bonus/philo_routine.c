@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/05 14:29:05 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/09 11:55:48 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/09 12:54:33 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ int	ft_philo_routine(t_data *data, int i)
 		//simulating ack for dead philo who returned
 		sem_post(data->s_ack_msg);
 		sem_wait(data->s_end_of_termination);
+		sem_post(data->s_end_of_termination);
 		sem_post(data->s_philo_deamon);
 		ft_sem_destroy(data, ALL);
 		ft_deallocate(data);
