@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/06 13:15:08 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/09 12:01:21 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,9 @@
 # define DEAD_SIGN 32
 # define ACK_MSG 64
 # define DEAMON 128
-# define SELF_DEAD 256
-# define ALL 511
+# define EOT 256
+# define SELF_DEAD 512
+# define ALL 1023
 
 # include <pthread.h>
 # include <semaphore.h>
@@ -49,6 +50,7 @@ typedef struct s_data {
 	sem_t			*s_dead_signal;
 	sem_t			*s_ack_msg;
 	sem_t			*s_philo_deamon;
+	sem_t			*s_end_of_termination;
 	sem_t			**s_self_dead;
 	char			**self_dead_name;
 	int				dead;

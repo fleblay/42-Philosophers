@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/05 14:29:05 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/06 15:19:17 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/09 11:55:48 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,19 +50,23 @@ int	ft_philo_routine(t_data *data, int i)
 	data->id = i;
 	index = 0;
 	// Ajout d'un check sur le fail des init create
+	///*
 	printf("from child %d\n", i);
-	if (i == 2)
+	if (data->id == 2)
 		res = 1;
 	else
+	//*/
 		res = pthread_create(&death_monitor, NULL, ft_end_simulation, data); 
 	if (res)
 	{
 		sem_post(data->s_dead_signal);
+		//simulating ack for dead philo who returned
 		sem_post(data->s_ack_msg);
+		sem_wait(data->s_end_of_termination);
 		sem_post(data->s_philo_deamon);
 		ft_sem_destroy(data, ALL);
 		ft_deallocate(data);
-		return (ft_putstr_fd("Error : thread create failure\n", 2), 1);
+		return (ft_putstr_fd("Error : thread create failure in philo\n", 2), 1);
 	}
 	printf("Deamon is up and running %d\n", data->id);
 	sem_post(data->s_philo_deamon);
@@ -73,12 +77,12 @@ int	ft_philo_routine(t_data *data, int i)
 	while (data->go_on)
 	{
 		// test satiated philo
-		/*
+		///*
 		if (index == 4)
 		{
 			sem_post(data->s_meal);
 		}
-		*/
+		//*/
 		// test satiated philo
 
 		// test dead philo
@@ -97,5 +101,6 @@ int	ft_philo_routine(t_data *data, int i)
 	pthread_join(death_monitor, NULL);
 	ft_sem_destroy(data, ALL);
 	ft_deallocate(data);
+	printf("Leaving now %d\n", data->id);
 	return (0);
 }

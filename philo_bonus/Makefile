@@ -12,7 +12,8 @@ OBJS_DIR	= ./obj
 OBJS_LIST	= $(patsubst $(SRCS_DIR)%.c, $(OBJS_DIR)%.o, $(SRCS))
 
 #CFLAGS		= -Wall -Wextra -Werror -g3 -fsanitize=thread
-CFLAGS		= -Wall -Wextra -Werror -g3
+#CFLAGS		= -Wall -Wextra -Werror -g3
+CFLAGS		= -Wall -Wextra -g3
 
 ifeq ($(MAKECMDGOALS), debug)
 CFLAGS		+= -D DEBUG=1

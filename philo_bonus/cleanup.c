@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/05 14:49:15 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/06 12:25:21 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/09 12:05:21 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,10 @@ void	ft_sem_close(t_data *data, int flags)
 		sem_close(data->s_ack_msg);
 	if (flags & 1 << 7)
 		sem_close(data->s_philo_deamon);
-	i = 0;
 	if (flags & 1 << 8)
+		sem_close(data->s_end_of_termination);
+	i = 0;
+	if (flags & 1 << 9)
 	{
 		while (i < data->philo_count)
 		{
@@ -64,8 +66,10 @@ void	ft_sem_unlink(t_data *data, int flags)
 		sem_unlink("/s_ack_msg");
 	if (flags & 1 << 7)
 		sem_unlink("/s_philo_deamon");
-	i = 0;
 	if (flags & 1 << 8)
+		sem_unlink("/s_end_of_termination");
+	i = 0;
+	if (flags & 1 << 9)
 	{
 		while (i < data->philo_count)
 		{
