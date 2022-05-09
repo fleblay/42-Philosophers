@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 09:49:35 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/09 16:35:07 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/09 18:13:33 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,5 +183,6 @@ int	main(int ac, char *av[])
 	pthread_join(data.dead_monitor, NULL);
 	ft_sem_destroy(&data, ALL);
 	ft_deallocate(&data);
+	sem_unlink("/s_last_print");
 	return (0);
 }

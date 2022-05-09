@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/05 14:29:05 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/09 16:50:15 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/09 18:36:46 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,28 +75,30 @@ int	ft_philo_routine(t_data *data, int i)
 	printf("Deamon is up and running %d\n", data->id);
 	sem_post(data->s_philo_deamon);
 	sem_wait(data->s_start);
+	data->start_time = ft_get_time();
 	printf("just before check self is dead %d\n", i);
 	check_if_end_sim(data);
 	printf("data->go_on : %d from  %d\n",data->go_on, i);
 	while (data->go_on)
 	{
 		// test satiated philo
+		/*
 		if (index == 4)
 		{
 			sem_post(data->s_meal);
 		}
+		*/
 		// test satiated philo
 
 		// test dead philo
-		/*
-		if (i == 2 && index == 2)
+		if (index == 8)
 		{
+			ft_safe_print(data, "died", 1);
 			sem_post(data->s_dead_signal);
 		}
-		*/
 		// test dead philo
 		usleep(1000000);
-		printf("loop from child %d\n", i);
+		ft_safe_print(data, "from loop", 0);
 		check_if_end_sim(data);
 		index++;
 	}

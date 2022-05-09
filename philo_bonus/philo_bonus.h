@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/09 16:17:11 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/09 18:18:01 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,4 +83,6 @@ void			ft_sem_close(t_data *data, int flags);
 void			ft_sem_unlink(t_data * data, int flags);
 void			ft_deallocate(t_data *data);
 int				ft_philo_routine(t_data *data, int i);
+void			ft_safe_print(t_data* data, char *msg, int last_msg);
+unsigned long	ft_get_time(void);
 #endif
