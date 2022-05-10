@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 12:59:02 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/09 18:32:10 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/10 11:10:02 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ int ft_create_sem(t_data *data)
 		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START), 0);
 	if (!ft_safe_sem_open(&data->s_meal, "/s_meal", 0))
 		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM), 0);
-	if (!ft_safe_sem_open(&data->s_fork, "/s_fork", 0))
+	if (!ft_safe_sem_open(&data->s_fork, "/s_fork", data->philo_count))
 		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
 		| MEAL), 0);
 	if (!ft_safe_sem_open(&data->s_dead_signal, "/s_dead_signal", 0))

@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 09:49:35 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/09 18:13:33 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/10 11:30:04 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void	*ft_meal_monitor(void *param)
 	ft_count_sem_post(data->s_end_simu, data->philo_count);
 	ft_count_sem_wait(data->s_ack_msg, data->philo_count);
 	ft_kill_dead_monitor(data);
-	sem_post(data->s_end_of_termination);
+	ft_count_sem_post(data->s_end_of_termination, data->philo_count);
 	return (NULL);
 }
 
@@ -102,7 +102,7 @@ void	*ft_dead_monitor(void *param)
 	ft_count_sem_post(data->s_end_simu, data->philo_count);
 	ft_count_sem_wait(data->s_ack_msg, data->philo_count);
 	ft_kill_meal_monitor(data);
-	sem_post(data->s_end_of_termination);
+	ft_count_sem_post(data->s_end_of_termination, data->philo_count);
 	return (NULL);
 }
 
@@ -176,13 +176,13 @@ int	main(int ac, char *av[])
 			i++;
 	}
 	ft_count_sem_wait(data.s_philo_deamon, data.philo_count);
-	ft_count_sem_post(data.s_start, data.philo_count);
+	// to change with terminal tryfork sem
+	ft_count_sem_post(data.s_start, data.philo_count + 1);
 	while (waitpid(-1, NULL, 0) > 0)
 		;
 	pthread_join(data.meal_goal_monitor, NULL);
 	pthread_join(data.dead_monitor, NULL);
 	ft_sem_destroy(&data, ALL);
 	ft_deallocate(&data);
-	sem_unlink("/s_last_print");
 	return (0);
 }
