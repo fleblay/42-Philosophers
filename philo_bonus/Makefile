@@ -1,7 +1,7 @@
 SRCS_DIR	= .
 SRCS_LIST	= philo_bonus.c ft_satoi.c ft_putstr_fd.c init_data.c\
 			philo_routine.c cleanup.c ft_strlcpy.c time_utils.c\
-			print_utils.c
+			print_utils.c philo_action.c
 
 SRCS		= $(addprefix $(SRCS_DIR)/, $(SRCS_LIST))
 

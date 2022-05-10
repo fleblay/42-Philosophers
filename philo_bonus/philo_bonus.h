@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/10 10:50:55 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/10 16:03:07 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@
 typedef struct s_data {
 	int				philo_count;
 	unsigned long	ttd;
+	unsigned long	ttd2;
 	unsigned long	tte;
 	unsigned long	tts;
 	int				meal_goal;
@@ -56,6 +57,7 @@ typedef struct s_data {
 	int				dead;
 	int				go_on;
 	int				last_start_eat;
+	int				last_start_eat2;
 	int				last_start_sleep;
 	int				last_start_think;
 	//usefull ?
@@ -68,6 +70,7 @@ typedef struct s_data {
 
 
 	unsigned long	start_time;
+	unsigned long	start_time2;
 	unsigned long	current_time;
 }	t_data;	
 
@@ -90,4 +93,9 @@ unsigned long	ft_get_time(void);
 void			ft_count_sem_post(sem_t *sem, int count);
 void			ft_count_sem_wait(sem_t *sem, int count);
 void			check_if_end_sim(t_data *data);
+int				ft_grab_forks(t_data *data);
+int				ft_eat(t_data *data);
+int				ft_sleep(t_data *data);
+int				ft_think(t_data *data);
+int				ft_self_is_dead(t_data *data);
 #endif

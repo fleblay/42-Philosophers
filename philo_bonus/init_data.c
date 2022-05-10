@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 12:59:02 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/10 11:10:02 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/10 17:01:44 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ int	ft_get_param(t_data *data, int ac, char *av[])
 	if (error)
 		return (ft_putstr_fd("Error : wrong philo count\n", 2), 0);
 	data->ttd = ft_satoi(av[2], &error);
+	data->ttd2 = data->ttd;
 	if (error)
 		return (ft_putstr_fd("Error : wrong time to die\n", 2), 0);
 	data->tte = ft_satoi(av[3], &error);
@@ -148,9 +149,11 @@ int	ft_create_sem_tab(t_data *data)
 
 void	ft_set_data(t_data *data)	
 {
+	data->start_time2 = 0;
 	data->dead = 0;
 	data->go_on = 1;
 	data->last_start_eat = 0;
+	data->last_start_eat2 = 0;
 	data->last_start_sleep = 0;
 	data->last_start_think = 0;
 	if (data->meal_goal == 0)
