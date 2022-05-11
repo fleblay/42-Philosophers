@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 15:08:57 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/11 12:09:29 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 15:30:33 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ static int	ft_launch_threads(t_data *data)
 			return (0);
 		i += 2;
 	}
+	return (0);
 	return (1);
 }
 
@@ -58,15 +59,11 @@ int	ft_launch_philo(t_data *data)
 	pthread_mutex_lock(&data->m_start);
 	if (!ft_launch_threads(data))
 	{
-		data->start_time = 0;
-		return (ft_putstr_fd("Error : creating threads", 2), 0);
+		data->start_time = PHILO_CREATE_FAILURE;
+		return (ft_putstr_fd("Error : creating threads\n", 2), 0);
 	}
 	else
-	{
-		//pthread_mutex_lock(&data->m_time);
 		data->start_time = ft_get_time();
-		//pthread_mutex_unlock(&data->m_time);
-	}
 	return (1);
 }
 

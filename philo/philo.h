@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/03 15:53:14 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/11 15:28:04 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,10 @@
 # define CHECK_FORK 32
 # define MEAL 64
 # define ALL 127
+
+//init values for ft_self_is_dead
+
+# define PHILO_CREATE_FAILURE 0
 
 typedef struct s_data {
 	struct s_philo	*philo;

@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 15:25:00 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/11 12:38:57 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 15:31:14 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,7 @@ unsigned long	ft_get_time(void)
 
 int	ft_self_is_dead(t_philo *philo)
 {
-	//pthread_mutex_lock(&philo->data->m_time);
 	philo->current_time = ft_get_time() - philo->start_time;
-	//pthread_mutex_unlock(&philo->data->m_time);
 	if (philo->current_time - philo->last_start_eat > philo->ttd)
 	{
 		philo->dead = 1;
@@ -42,9 +40,6 @@ int	ft_self_is_dead(t_philo *philo)
 
 int	ft_eat(t_philo *philo)
 {
-	//pthread_mutex_lock(&philo->data->m_time);
-	//philo->current_time = ft_get_time() - philo->start_time;
-	//pthread_mutex_unlock(&philo->data->m_time);
 	if (ft_self_is_dead(philo))
 		return (ft_release_forks(philo), 0);
 	s_print(philo, "is eating", 0);
@@ -55,9 +50,7 @@ int	ft_eat(t_philo *philo)
 			return (ft_release_forks(philo), 0);
 		else
 			usleep(500);
-		//pthread_mutex_lock(&philo->data->m_time);
 		philo->current_time = ft_get_time() - philo->start_time;
-		//pthread_mutex_unlock(&philo->data->m_time);
 	}
 	pthread_mutex_lock(&philo->data->m_meal);
 	philo->data->meal_count[philo->id - 1]++;
@@ -68,9 +61,6 @@ int	ft_eat(t_philo *philo)
 
 int	ft_sleep(t_philo *philo)
 {
-	//pthread_mutex_lock(&philo->data->m_time);
-	//philo->current_time = ft_get_time() - philo->start_time;
-	//pthread_mutex_unlock(&philo->data->m_time);
 	if (ft_self_is_dead(philo))
 		return (ft_release_forks(philo), 0);
 	s_print(philo, "is sleeping", 0);
@@ -81,18 +71,13 @@ int	ft_sleep(t_philo *philo)
 			return (ft_release_forks(philo), 0);
 		else
 			usleep(500);
-		//pthread_mutex_lock(&philo->data->m_time);
 		philo->current_time = ft_get_time() - philo->start_time;
-		//pthread_mutex_unlock(&philo->data->m_time);
 	}
 	return (1);
 }
 
 int	ft_think(t_philo *philo)
 {
-	//pthread_mutex_lock(&philo->data->m_time);
-	//philo->current_time = ft_get_time() - philo->start_time;
-	//pthread_mutex_unlock(&philo->data->m_time);
 	if (ft_self_is_dead(philo))
 		return (ft_release_forks(philo), 0);
 	s_print(philo, "is thinking", 0);
@@ -106,9 +91,7 @@ int	ft_think(t_philo *philo)
 			return (ft_release_forks(philo), 0);
 		else
 			usleep(500);
-		//pthread_mutex_lock(&philo->data->m_time);
 		philo->current_time = ft_get_time() - philo->start_time;
-		//pthread_mutex_unlock(&philo->data->m_time);
 	}
 	return (1);
 }

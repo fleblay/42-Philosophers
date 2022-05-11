@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 15:01:51 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/03 15:48:13 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/11 15:28:10 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	*philo_routine(void *philo_struct)
 
 	philo = (t_philo *)philo_struct;
 	ft_set_start_time(philo);
-	if (philo->start_time == 0)
+	if (philo->start_time == PHILO_CREATE_FAILURE)
 		return (NULL);
 	if (philo->id % 2 == 0)
 		usleep((philo->tte - 10) * 1000);
