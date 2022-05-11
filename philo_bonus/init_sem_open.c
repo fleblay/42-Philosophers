@@ -6,7 +6,7 @@
 /*   By: fred <marvin@42.fr>                        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 12:50:02 by fred              #+#    #+#             */
-/*   Updated: 2022/05/11 12:56:39 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 15:45:45 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
-char *ft_create_self_dead_sem_name(int i)
+char	*ft_create_self_dead_sem_name(int i)
 {
 	char	*name;
 
@@ -22,8 +22,8 @@ char *ft_create_self_dead_sem_name(int i)
 	if (!name)
 		return (NULL);
 	ft_strlcpy(name, "/s_philo_000", 13);
-	name[9] = i / 100 + 48; 
-	name[10] = i / 10 - (i / 100) * 10 + 48; 
+	name[9] = i / 100 + 48;
+	name[10] = i / 10 - (i / 100) * 10 + 48;
 	name[11] = i - (i / 10) * 10 - (i / 100) * 100 + 48;
 	return (name);
 }
@@ -36,7 +36,7 @@ int	ft_safe_sem_open(sem_t **sem_ptr, char *sem_name, int value)
 	return (1);
 }
 
-int ft_create_sem(t_data *data)
+int	ft_create_sem(t_data *data)
 {
 	if (!ft_safe_sem_open(&data->s_print, "/s_print", 1))
 		return (ft_sem_destroy(data, SELF_DEAD), 0);
@@ -48,7 +48,7 @@ int ft_create_sem(t_data *data)
 		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM), 0);
 	if (!ft_safe_sem_open(&data->s_fork, "/s_fork", data->philo_count))
 		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
-		| MEAL), 0);
+				| MEAL), 0);
 	if (!ft_safe_sem_open(&data->s_dead_signal, "/s_dead_signal", 0))
 		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
 				| MEAL | FORK), 0);
@@ -72,7 +72,7 @@ int	ft_create_sem_tab(t_data *data)
 	while (i < data->philo_count)
 	{
 		data->s_self_dead[i] = sem_open(data->self_dead_name[i],
-			O_CREAT, 0644, 1);
+				O_CREAT, 0644, 1);
 		if (data->s_self_dead[i] == SEM_FAILED)
 		{
 			while (--i >= 0)

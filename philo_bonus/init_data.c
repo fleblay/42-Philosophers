@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 12:59:02 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/11 12:53:55 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 15:49:38 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,14 +66,14 @@ int	ft_allocate(t_data *data)
 			while (--i >= 0)
 				free(data->self_dead_name[i]);
 			return (free(data->philo_pid), free(data->s_self_dead),
-					free(data->self_dead_name), 0);
+				free(data->self_dead_name), 0);
 		}
 		i++;
 	}
 	return (1);
 }
 
-void	ft_set_data(t_data *data)	
+void	ft_set_data(t_data *data)
 {
 	data->start_time = 0;
 	data->dead = 0;
@@ -98,6 +98,6 @@ int	ft_init_data(t_data *data, int ac, char *av[])
 	if (!ft_create_sem_tab(data) || !ft_create_sem(data))
 		return (ft_deallocate(data),
 			ft_putstr_fd("Error : init semaphore failure\n", 2), 0);
-	ft_set_data(data);	
+	ft_set_data(data);
 	return (1);
 }

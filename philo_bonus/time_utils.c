@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/06 13:15:50 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/11 15:09:39 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 15:50:27 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ unsigned long	ft_get_time(void)
 	return (now.tv_sec * 1000 + now.tv_usec / 1000);
 }
 
-int		ft_self_is_dead(t_data *data)
+int	ft_self_is_dead(t_data *data)
 {
 	unsigned long	current_time;
 

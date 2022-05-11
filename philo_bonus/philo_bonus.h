@@ -6,12 +6,12 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/11 15:09:23 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 15:37:56 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-# define PHILO_H
+#ifndef PHILO_BONUS_H
+# define PHILO_BONUS_H
 
 # ifndef DEBUG
 #  define DEBUG 0
@@ -67,8 +67,6 @@ typedef struct s_data {
 	pid_t			*philo_pid;
 	pthread_t		meal_goal_monitor;
 	pthread_t		dead_monitor;
-
-
 	unsigned long	start_time;
 	unsigned long	current_time;
 }	t_data;	
@@ -84,10 +82,10 @@ void			ft_sem_destroy(t_data *data, int flags);
 void			ft_set_data(t_data *data);
 int				ft_allocate(t_data *data);
 void			ft_sem_close(t_data *data, int flags);
-void			ft_sem_unlink(t_data * data, int flags);
+void			ft_sem_unlink(t_data *data, int flags);
 void			ft_deallocate(t_data *data);
 int				ft_philo_routine(t_data *data, int i);
-void			ft_safe_print(t_data* data, char *msg, int last_msg);
+void			ft_safe_print(t_data *data, char *msg, int last_msg);
 unsigned long	ft_get_time(void);
 void			ft_count_sem_post(sem_t *sem, int count);
 void			ft_count_sem_wait(sem_t *sem, int count);
@@ -104,4 +102,5 @@ void			ft_unlock_solo_philo(t_data *data);
 void			ft_cleanup_exit_error(t_data *data, char *msg);
 void			ft_fake_own_death(t_data *data);
 void			ft_kill_philo_am_i_dead_monitor(t_data *data);
+
 #endif

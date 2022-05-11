@@ -6,7 +6,7 @@
 /*   By: fred <marvin@42.fr>                        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 15:32:42 by fred              #+#    #+#             */
-/*   Updated: 2022/05/11 11:18:15 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 15:50:00 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,14 @@
 
 void	ft_grab_forks(t_data *data)
 {
-	//ft_safe_print(data, "waiting for 1st fork", 0);
 	sem_wait(data->s_fork);
 	ft_safe_print(data, "has taken a fork", 0);
-	//ft_safe_print(data, "waiting for 2nd fork", 0);
 	sem_wait(data->s_fork);
 	ft_safe_print(data, "has taken a fork", 0);
-	//ft_safe_print(data, "success getting 2 forks", 0);
 }
 
 void	ft_give_back_forks(t_data *data)
 {
-	//printf("givin back 2 forks %d\n", data->id + 1);
 	sem_post(data->s_fork);
 	if (data->philo_count > 1)
 		sem_post(data->s_fork);
@@ -38,11 +34,9 @@ int	ft_eat(t_data *data)
 	if (ft_sim_is_over(data))
 		return (ft_give_back_forks(data), 0);
 	data->current_time = ft_get_time() - data->start_time;
-	// utiliser un semaphore prore au lieu de partager celui de data->dead ?
 	sem_wait(data->s_self_dead[data->id]);
 	data->last_start_eat = data->current_time;
 	sem_post(data->s_self_dead[data->id]);
-	// utiliser un semaphore prore au lieu de partager celui de data->dead ?
 	ft_safe_print(data, "is eating", 0);
 	while (data->current_time - data->last_start_eat < data->tte)
 	{
@@ -93,4 +87,3 @@ int	ft_think(t_data *data)
 	}
 	return (1);
 }
-

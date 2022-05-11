@@ -6,7 +6,7 @@
 /*   By: fred <marvin@42.fr>                        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 12:46:12 by fred              #+#    #+#             */
-/*   Updated: 2022/05/11 14:48:05 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 15:50:41 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 void	ft_deallocate(t_data *data)
 {
 	int	i;
+
 	free(data->philo_pid);
 	free(data->s_self_dead);
 	i = 0;
