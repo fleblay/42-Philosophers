@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 15:08:57 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/03 15:39:30 by fle-blay         ###   ########.fr       */
+/*   Updated: 2022/05/11 12:09:29 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,9 @@ int	ft_launch_philo(t_data *data)
 	}
 	else
 	{
-		pthread_mutex_lock(&data->m_time);
+		//pthread_mutex_lock(&data->m_time);
 		data->start_time = ft_get_time();
-		pthread_mutex_unlock(&data->m_time);
+		//pthread_mutex_unlock(&data->m_time);
 	}
 	return (1);
 }
