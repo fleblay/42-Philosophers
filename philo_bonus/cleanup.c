@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/05 14:49:15 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/11 10:16:17 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 12:47:00 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,18 +89,4 @@ void	ft_sem_destroy(t_data *data, int flags)
 {
 	ft_sem_close(data, flags);
 	ft_sem_unlink(data, flags);
-}
-
-void	ft_deallocate(t_data *data)
-{
-	int	i;
-	free(data->philo_pid);
-	free(data->s_self_dead);
-	i = 0;
-	while (i < data->philo_count)
-	{
-		free(data->self_dead_name[i]);
-		i++;
-	}
-	free(data->self_dead_name);
 }

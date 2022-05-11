@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 09:49:35 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/11 11:46:08 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 14:50:02 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,71 +16,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/wait.h>
-
-void	ft_count_sem_post(sem_t *sem, int count)
-{
-	int	i;
-
-	i = 0;
-	while (i < count)
-	{
-		sem_post(sem);
-		i++;
-	}
-}
-
-void	ft_count_sem_wait(sem_t *sem, int count)
-{
-	int	i;
-
-	i = 0;
-	while (i < count)
-	{
-		sem_wait(sem);
-		i++;
-	}
-}
-
-void	ft_kill_dead_monitor(t_data *data)
-{
-	sem_post(data->s_dead_signal);
-	ft_count_sem_post(data->s_ack_msg, data->philo_count);
-}
-
-void	ft_kill_meal_monitor(t_data *data)
-{
-	ft_count_sem_post(data->s_meal, data->philo_count);
-	ft_count_sem_post(data->s_ack_msg, data->philo_count);
-}
-
-void	ft_unlock_solo_philo(t_data *data)
-{
-	if (data->philo_count == 1)
-	{
-		sem_post(data->s_fork);
-		sem_post(data->s_print);
-		//	printf("fake fork\n");
-	}
-}
-
-int	ft_init_data(t_data *data, int ac, char *av[])
-{
-	if (ac != 5 && ac != 6)
-		return (ft_putstr_fd("Error : wrong arg count\n", 2), 0);
-	if (!ft_get_param(data, ac, av))
-		return (ft_putstr_fd("Error : wrong parameter\n", 2), 0);
-	if (data->philo_count > 200 || data->ttd < 60
-		|| data->tte < 60 || data->tts < 60)
-		return (ft_putstr_fd("Error : out of bound parameter\n", 2), 0);
-	if (!ft_allocate(data))
-		return (ft_putstr_fd("Error : allocate failure\n", 2), 0);
-	ft_sem_unlink(data, ALL);
-	if (!ft_create_sem_tab(data) || !ft_create_sem(data))
-		return (ft_deallocate(data),
-			ft_putstr_fd("Error : init semaphore failure\n", 2), 0);
-	ft_set_data(data);	
-	return (1);
-}
 
 void	*ft_meal_monitor(void *param)
 {
@@ -125,21 +60,13 @@ void	ft_launch_monitors(t_data *data)
 
 	res = pthread_create(&data->meal_goal_monitor, NULL, ft_meal_monitor, data);
 	if (res)
-	{
-		ft_sem_destroy(data, ALL);
-		ft_deallocate(data);
-		ft_putstr_fd("Error : thread create failure\n", 2);
-		exit (1);
-	}
+		ft_cleanup_exit_error(data, "Error : fork failure\n");
 	res = pthread_create(&data->dead_monitor, NULL, ft_dead_monitor, data);
 	if (res)
 	{
 		ft_kill_meal_monitor(data);
 		pthread_join(data->meal_goal_monitor, NULL);
-		ft_sem_destroy(data, ALL);
-		ft_deallocate(data);
-		ft_putstr_fd("Error : thread create failure\n", 2);
-		exit (1);
+		ft_cleanup_exit_error(data, "Error : fork failure\n");
 	}
 }
 
@@ -157,10 +84,7 @@ void	ft_catch_fork_failure(t_data *data)
 	//printf("waiting for childs OVER\n");
 	pthread_join(data->meal_goal_monitor, NULL);
 	pthread_join(data->dead_monitor, NULL);
-	ft_sem_destroy(data, ALL);
-	ft_deallocate(data);
-	ft_putstr_fd("Error : fork failure\n", 2);
-	exit (1);
+	ft_cleanup_exit_error(data, "Error : fork failure\n");
 }
 
 int	main(int ac, char *av[])

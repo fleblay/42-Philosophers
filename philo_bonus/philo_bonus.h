@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:19:25 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/11 11:12:54 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 15:09:23 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,11 @@
 # define EOT 256
 # define SELF_DEAD 512
 # define ALL 1023
+
+//init values for ft_self_is_dead
+
+# define UNINITIALIZED 0
+# define MONITOR_INIT_FAILURE 1
 
 # include <pthread.h>
 # include <semaphore.h>
@@ -92,4 +97,11 @@ int				ft_eat(t_data *data);
 int				ft_sleep(t_data *data);
 int				ft_think(t_data *data);
 int				ft_self_is_dead(t_data *data);
+char			*ft_create_self_dead_sem_name(int i);
+void			ft_kill_dead_monitor(t_data *data);
+void			ft_kill_meal_monitor(t_data *data);
+void			ft_unlock_solo_philo(t_data *data);
+void			ft_cleanup_exit_error(t_data *data, char *msg);
+void			ft_fake_own_death(t_data *data);
+void			ft_kill_philo_am_i_dead_monitor(t_data *data);
 #endif

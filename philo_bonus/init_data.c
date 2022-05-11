@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 12:59:02 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/11 10:38:11 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 12:53:55 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,20 +44,6 @@ int	ft_get_param(t_data *data, int ac, char *av[])
 	return (1);
 }
 
-char *ft_create_self_dead_sem_name(int i)
-{
-	char	*name;
-
-	name = (char *)malloc(13 * sizeof(char));
-	if (!name)
-		return (NULL);
-	ft_strlcpy(name, "/s_philo_000", 13);
-	name[9] = i / 100 + 48; 
-	name[10] = i / 10 - (i / 100) * 10 + 48; 
-	name[11] = i - (i / 10) * 10 - (i / 100) * 100 + 48;
-	return (name);
-}
-
 int	ft_allocate(t_data *data)
 {
 	int	i;
@@ -87,65 +73,6 @@ int	ft_allocate(t_data *data)
 	return (1);
 }
 
-int	ft_safe_sem_open(sem_t **sem_ptr, char *sem_name, int value)
-{
-	*sem_ptr = sem_open(sem_name, O_CREAT, 0644, value);
-	if (*sem_ptr == SEM_FAILED)
-		return (0);
-	return (1);
-}
-
-int ft_create_sem(t_data *data)
-{
-	if (!ft_safe_sem_open(&data->s_print, "/s_print", 1))
-		return (ft_sem_destroy(data, SELF_DEAD), 0);
-	if (!ft_safe_sem_open(&data->s_start, "/s_start", 0))
-		return (ft_sem_destroy(data, SELF_DEAD | PRINT), 0);
-	if (!ft_safe_sem_open(&data->s_end_simu, "/s_end_simu", 0))
-		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START), 0);
-	if (!ft_safe_sem_open(&data->s_meal, "/s_meal", 0))
-		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM), 0);
-	if (!ft_safe_sem_open(&data->s_fork, "/s_fork", data->philo_count))
-		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
-		| MEAL), 0);
-	if (!ft_safe_sem_open(&data->s_dead_signal, "/s_dead_signal", 0))
-		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
-				| MEAL | FORK), 0);
-	if (!ft_safe_sem_open(&data->s_ack_msg, "/s_ack_msg", 0))
-		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
-				| MEAL | FORK | DEAD_SIGN), 0);
-	if (!ft_safe_sem_open(&data->s_philo_deamon, "/s_philo_deamon", 0))
-		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
-				| MEAL | FORK | DEAD_SIGN | ACK_MSG), 0);
-	if (!ft_safe_sem_open(&data->s_end_of_termination, "/s_eot", 0))
-		return (ft_sem_destroy(data, SELF_DEAD | PRINT | START | END_SIM
-				| MEAL | FORK | DEAD_SIGN | ACK_MSG | DEAMON), 0);
-	return (1);
-}
-
-int	ft_create_sem_tab(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->philo_count)
-	{
-		data->s_self_dead[i] = sem_open(data->self_dead_name[i],
-			O_CREAT, 0644, 1);
-		if (data->s_self_dead[i] == SEM_FAILED)
-		{
-			while (--i >= 0)
-			{
-				sem_close(data->s_self_dead[i]);
-				sem_unlink(data->self_dead_name[i]);
-			}
-			return (0);
-		}
-		i++;
-	}
-	return (1);
-}
-
 void	ft_set_data(t_data *data)	
 {
 	data->start_time = 0;
@@ -154,4 +81,23 @@ void	ft_set_data(t_data *data)
 	data->last_start_eat = 0;
 	data->last_start_sleep = 0;
 	data->last_start_think = 0;
+}
+
+int	ft_init_data(t_data *data, int ac, char *av[])
+{
+	if (ac != 5 && ac != 6)
+		return (ft_putstr_fd("Error : wrong arg count\n", 2), 0);
+	if (!ft_get_param(data, ac, av))
+		return (ft_putstr_fd("Error : wrong parameter\n", 2), 0);
+	if (data->philo_count > 200 || data->ttd < 60
+		|| data->tte < 60 || data->tts < 60)
+		return (ft_putstr_fd("Error : out of bound parameter\n", 2), 0);
+	if (!ft_allocate(data))
+		return (ft_putstr_fd("Error : allocate failure\n", 2), 0);
+	ft_sem_unlink(data, ALL);
+	if (!ft_create_sem_tab(data) || !ft_create_sem(data))
+		return (ft_deallocate(data),
+			ft_putstr_fd("Error : init semaphore failure\n", 2), 0);
+	ft_set_data(data);	
+	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/06 13:15:50 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/11 10:29:48 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 15:09:39 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,15 @@ int		ft_self_is_dead(t_data *data)
 	unsigned long	current_time;
 
 	sem_wait(data->s_self_dead[data->id]);
-	if (data->start_time == 0)
+	if (data->start_time == UNINITIALIZED)
 	{
 		sem_post(data->s_self_dead[data->id]);
 		return (0);
+	}
+	if (data->start_time == MONITOR_INIT_FAILURE)
+	{
+		sem_post(data->s_self_dead[data->id]);
+		return (1);
 	}
 	current_time = ft_get_time() - data->start_time;
 	if (current_time - data->last_start_eat > data->ttd)

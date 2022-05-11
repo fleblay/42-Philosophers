@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/05 14:29:05 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/11 11:30:27 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 15:10:34 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ void	*ft_dead_checker(void *param)
 void	ft_create_philo_monitor(t_data *data, pthread_t *eos_monitor, pthread_t *am_i_dead_monitor)
 {
 	int	res;
-
 	/*
 	if (data->id == 2 || data->id == 3)
 		res = 1;
@@ -72,36 +71,21 @@ void	ft_create_philo_monitor(t_data *data, pthread_t *eos_monitor, pthread_t *am
 		res = pthread_create(am_i_dead_monitor, NULL, ft_dead_checker, data); 
 	if (res)
 	{
-		sem_post(data->s_dead_signal);
-		//simulating ack for dead philo who returned
-		sem_post(data->s_ack_msg);
-		sem_wait(data->s_end_of_termination);
-		//sem_post(data->s_end_of_termination);
-		sem_post(data->s_philo_deamon);
-		ft_sem_destroy(data, ALL);
-		ft_deallocate(data);
-		ft_putstr_fd("Error : thread create failure in philo\n", 2);
-		exit (1);
+		ft_fake_own_death(data);
+		ft_cleanup_exit_error(data, "Error : thread create failure in philo\n");
 	}
+	/*
+	if (data->id == 2 || data->id == 3)
+		res = 1;
+	else
+	*/
 		res = pthread_create(eos_monitor, NULL, ft_eos_checker, data); 
 	if (res)
 	{
-		sem_post(data->s_dead_signal);
-		//simulating ack for dead philo who returned
-		sem_post(data->s_ack_msg);
-		sem_wait(data->s_end_of_termination);
-		//sem_post(data->s_end_of_termination);
-		sem_post(data->s_philo_deamon);
-		// specifiq ajout thread
-		sem_wait(data->s_self_dead[data->id]);
-		data->start_time = ft_get_time();
-		sem_post(data->s_self_dead[data->id]);
+		ft_fake_own_death(data);
+		ft_kill_philo_am_i_dead_monitor(data);
 		pthread_join(*am_i_dead_monitor, NULL);
-		// specifiq ajout thread
-		ft_sem_destroy(data, ALL);
-		ft_deallocate(data);
-		ft_putstr_fd("Error : thread create failure in philo\n", 2);
-		exit (1);
+		ft_cleanup_exit_error(data, "Error : thread create failure in philo\n");
 	}
 }
 
