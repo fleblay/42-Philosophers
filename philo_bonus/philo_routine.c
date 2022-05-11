@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/05 14:29:05 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/10 18:08:59 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 11:30:27 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,20 @@
 #include <unistd.h>
 #include <signal.h>
 
-void	check_if_end_sim(t_data *data)
+int	ft_sim_is_over(t_data *data)
 {
 	sem_wait(data->s_self_dead[data->id]);
 	if (data->dead == 1)
+	{
+		sem_post(data->s_self_dead[data->id]);
 		data->go_on = 0;
+		return (1);
+	}
 	sem_post(data->s_self_dead[data->id]);
+	return (0);
 }
 
-void	*ft_end_simulation(void *param)
+void	*ft_eos_checker(void *param)
 {
 	t_data		*data;
 
@@ -78,7 +83,7 @@ void	ft_create_philo_monitor(t_data *data, pthread_t *eos_monitor, pthread_t *am
 		ft_putstr_fd("Error : thread create failure in philo\n", 2);
 		exit (1);
 	}
-		res = pthread_create(eos_monitor, NULL, ft_end_simulation, data); 
+		res = pthread_create(eos_monitor, NULL, ft_eos_checker, data); 
 	if (res)
 	{
 		sem_post(data->s_dead_signal);
@@ -88,9 +93,8 @@ void	ft_create_philo_monitor(t_data *data, pthread_t *eos_monitor, pthread_t *am
 		//sem_post(data->s_end_of_termination);
 		sem_post(data->s_philo_deamon);
 		// specifiq ajout thread
-		data->start_time = ft_get_time();
 		sem_wait(data->s_self_dead[data->id]);
-		data->start_time2 = data->start_time;
+		data->start_time = ft_get_time();
 		sem_post(data->s_self_dead[data->id]);
 		pthread_join(*am_i_dead_monitor, NULL);
 		// specifiq ajout thread
@@ -111,46 +115,20 @@ int	ft_philo_routine(t_data *data, int i)
 	//printf("Deamon is up and running %d\n", data->id);
 	sem_post(data->s_philo_deamon);
 	sem_wait(data->s_start);
-	data->start_time = ft_get_time();
 	sem_wait(data->s_self_dead[data->id]);
-	data->start_time2 = data->start_time;
+	data->start_time = ft_get_time();
 	sem_post(data->s_self_dead[data->id]);
-	data->last_start_eat = 0;
 	//printf("just before check self is dead %d\n", i);
-	check_if_end_sim(data);
 	//printf("data->go_on : %d from  %d\n",data->go_on, i);
 	if ((data->id + 1) % 2 == 0)
 		usleep((data->tte - 10) * 1000);
 	while (data->go_on)
 	{
-		// test satiated philo
-		/*
-		if (index == 4)
-		{
-			sem_post(data->s_meal);
-		}
-		*/
-		// test satiated philo
-
-		// test dead philo
-		/*
-		if (index == 4)
-		{
-			sem_post(data->s_dead_signal);
-			ft_safe_print(data, "died", 1);
+		if (ft_sim_is_over(data))
 			break ;
-		}
-		*/
-		// test dead philo
-		if (!ft_grab_forks(data))
+		ft_grab_forks(data);
+		if (!ft_eat(data) || !ft_sleep(data) || !ft_think(data))
 			break ;
-		if (!ft_eat(data))
-			break ;
-		if (!ft_sleep(data))
-			break ;
-		if (!ft_think(data))
-			break ;
-		check_if_end_sim(data);
 	}
 	pthread_join(eos_monitor, NULL);
 	pthread_join(am_i_dead_monitor, NULL);

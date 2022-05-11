@@ -6,7 +6,7 @@
 /*   By: fle-blay <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/02 09:49:35 by fle-blay          #+#    #+#             */
-/*   Updated: 2022/05/10 18:02:19 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/11 11:46:08 by fred             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,16 @@ void	ft_kill_meal_monitor(t_data *data)
 {
 	ft_count_sem_post(data->s_meal, data->philo_count);
 	ft_count_sem_post(data->s_ack_msg, data->philo_count);
+}
+
+void	ft_unlock_solo_philo(t_data *data)
+{
+	if (data->philo_count == 1)
+	{
+		sem_post(data->s_fork);
+		sem_post(data->s_print);
+		//	printf("fake fork\n");
+	}
 }
 
 int	ft_init_data(t_data *data, int ac, char *av[])
@@ -182,15 +192,8 @@ int	main(int ac, char *av[])
 	// switch a confirmer de l'emplacement des join avant les waits
 	pthread_join(data.meal_goal_monitor, NULL);
 	pthread_join(data.dead_monitor, NULL);
-	if (data.philo_count == 1)
-	{
-		sem_post(data.s_fork);
-		sem_post(data.s_print);
-		printf("fake fork\n");
-	}
+	ft_unlock_solo_philo(&data);
 	while (waitpid(-1, NULL, 0) > 0)
 		;
-	ft_sem_destroy(&data, ALL);
-	ft_deallocate(&data);
-	return (0);
+	return (ft_sem_destroy(&data, ALL), ft_deallocate(&data), 0);
 }
