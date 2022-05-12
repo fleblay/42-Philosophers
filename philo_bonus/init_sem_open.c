@@ -6,13 +6,14 @@
 /*   By: fred <marvin@42.fr>                        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 12:50:02 by fred              #+#    #+#             */
-/*   Updated: 2022/05/11 15:45:45 by fred             ###   ########.fr       */
+/*   Updated: 2022/05/12 14:39:52 by fle-blay         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 #include <stdlib.h>
 #include <fcntl.h>
+#include <stdio.h>
 
 char	*ft_create_self_dead_sem_name(int i)
 {
@@ -24,7 +25,7 @@ char	*ft_create_self_dead_sem_name(int i)
 	ft_strlcpy(name, "/s_philo_000", 13);
 	name[9] = i / 100 + 48;
 	name[10] = i / 10 - (i / 100) * 10 + 48;
-	name[11] = i - (i / 10) * 10 - (i / 100) * 100 + 48;
+	name[11] = i - (i / 10) * 10 + 48;
 	return (name);
 }
 
