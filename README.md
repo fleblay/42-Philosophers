@@ -16,7 +16,7 @@ A given number of philosophers sit around a table with a huge plate of pasta at 
 		Has only 1 fork, but needs 2 forks to eat (he will have to borrow one from either his left or right neighbor)
 	</li>
 	<li>
-		The philosophers will follow this routine :
+		A philosopher will follow this routine :
 		<ul>
 		<li>
 			Grab 2 forks and start to eat for a given amount of time : tte (time to eat)
@@ -38,7 +38,7 @@ The goal is to try to have the philosophers live as long as possible. To do so, 
 
 <ul>
 	<li>
-		Each philosopher is a a thread (mandatory part) or a process (bonus part)...
+		Each philosopher is a thread (mandatory part) or a process (bonus part)...
 	</li>
 	<li>
 		They share access to data (forks), but should not use it at the same time (avoid dataraces)
@@ -48,9 +48,7 @@ The goal is to try to have the philosophers live as long as possible. To do so, 
 		(synchronization with mutexes for mandatory part, mutexes AND semaphores for the bonus part)
 	</li>
 	<li>
-		They must avoid at all cost being in a dead-end situation (deadlock). For example, if there are only 2
-		philosophers and each of them grabs a fork, they will be locked in a situation where each of them tries to grab
-		a 2nd fork to eat. After some time, both of them will die.
+		They must avoid at all cost being in a dead-end situation (deadlock). For example, if there are only 2 philosophers and each of them grabs a fork, they will be locked in a situation where each one of them tries to grab a 2nd fork to eat. After some time, both of them will die.
 	</li>
 </ul>
 
@@ -69,7 +67,7 @@ Clean code :
   </li>
 </ul>
 
-No communication between philosophers, ie one philosopher cannot ask information about the state of another, nor tell
+No communication between philosophers, ie. one philosopher cannot ask information about the state of another, nor tell
 the others philosophers that he is about to die.
 <br/>
 The program needs to shutdown nicely in case of error (thread creation failure, process creation failure).
@@ -77,19 +75,17 @@ The program needs to shutdown nicely in case of error (thread creation failure, 
 
 ## Implemented Solution
 
-For both of the project, the allowed functions did not include the "try" version (pthread_mutex_trylock and
+For both projects, the allowed functions did not include the "try" version (pthread_mutex_trylock and
 sem_trywait). Moreover, for the bonus part, we couldn't use the function to get the value of the semaphore
 (sem_getvalue).
-
 <br/>
-
 This increases the difficulty of the projet because :
 <ul>
 	<li>
 		Mandatory part :
 		<ul>
 			<li>
-				You cannot try to acquire access data (pthread_mutex_trylock), and change your mind. Once you demand access to it, you will
+				You cannot try to acquire data access (pthread_mutex_trylock), and change your mind. Once you demand access to it, you will
 				remain blocked until it is available...
 			</li>
 			<li>
@@ -101,7 +97,7 @@ This increases the difficulty of the projet because :
 		Bonus part :
 		<ul>
 			<li>
-				You still cannot try to acquire access data (sem_trywait), and change your mind. Once you demand access to it, you will
+				You still cannot try to acquire data access (sem_trywait), and change your mind. Once you demand access to it, you will
 				remain blocked until it is available...
 			</li>
 			<li>
@@ -128,21 +124,18 @@ Mandatory part :
 Bonus part :
 
 <ul>
-  <li>Each philosopher is child process spawned by the main process</li>
-  <li>After spawning the last philosopher, the main thread become a monitoring process</li>
-  shared between all the threds so they can stop</li>
+  <li>Each philosopher is a child process spawned by the father process</li>
+  <li>After spawning the last philosopher, the father process become a monitoring process</li>
   <li>
   	Each philosopher process will spawn 2 threads :
 	<ul>
 		<li>A meal_goal_monitor deamon in charge of checking if the all the philosophers have eaten the requested amount of time</li>
 		<li>A dead_monitor deamon in charge of checking if one of the philosophers died starving</li>
 	</ul>
-	Each of theses processes are in a blocked state (sem_wait) and can be unlocked by the monitoring process. Doing so
-	will terminate the other deamon before rejoining the main thread and exiting nicely
+	Each of theses threads are in a blocked state (sem_wait) and can be unlocked by the monitoring process. Doing so
+	will terminate the other deamon before rejoining the main thread and exit nicely
   </li>
 </ul>
-
-### Schematics and Diagrams
 
 ## Usage
 
@@ -203,6 +196,6 @@ The last parameter is optional : if all philosophers have eaten at least number_
   	Concurrent Programming using POSIX Threads. Mutual Exclusion concept (mutexes) and deadlock.
   </li>
   <li>
-  	Concurrent Programming using process. Interprocess Communication (IPC) unsing semaphores (signal and files)
+  	Concurrent Programming using process. Interprocess Communication (IPC) using semaphores (signal and files)
   </li>
 </ul>
