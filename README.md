@@ -193,9 +193,9 @@ The last parameter is optional : if all philosophers have eaten at least number_
 
 <ul>
   <li>
-  	Concurrent Programming using POSIX Threads. Mutual Exclusion concept (mutexes) and deadlock.
+  	Parallel Programming using POSIX Threads. Mutual Exclusion concept (mutexes) and deadlock.
   </li>
   <li>
-  	Concurrent Programming using process. Interprocess Communication (IPC) using semaphores (signal and files)
+  	Parallel Programming using process. Interprocess Communication (IPC) using semaphores (signal and files)
   </li>
 </ul>
